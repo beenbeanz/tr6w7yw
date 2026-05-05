@@ -1,5 +1,5 @@
 <template>
-  <div class="page-wrapper">
+  <div class="page">
     <div class="logo-container">
       <img src="/logo.png" alt="triple t logo" class="logo" />
     </div>
@@ -26,34 +26,32 @@ body {
   background-repeat: no-repeat;
 }
 
-.page-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-  padding: 2rem 1rem;
-}
-
 .logo-container {
   display: flex;
   justify-content: center;
   width: 100%;
+  padding-top: 10rem;
+  padding-bottom: -10px;
 }
 
 .logo {
-  width: clamp(100px, 18.75vw, 250px); /* scales with screen size */
-  height: auto; /* keeps aspect ratio */
+  width: clamp(100px, 18.75vw, 250px); 
+  height: auto; 
 }
 
 .title {
   text-align: center;
-  font-size: clamp(2rem, 8vw, 80px); /* responsive font too */
-  padding-top: 2rem;
+  font-size: clamp(2rem, 8vw, 80px);
+  padding-top: 0;
+  margin-top: -5rem;
 }
 
 .button {
   display: flex;
   justify-content: center;
   margin-top: 2rem;
+  border-radius: 20px;
+  border-width: 10px;
+  
 }
 </style>
