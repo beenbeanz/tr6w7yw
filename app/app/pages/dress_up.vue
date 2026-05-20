@@ -28,6 +28,9 @@
   --serif: "DM Serif Display", serif;
   --sans: "Sora", sans-serif;
 }
+html {
+  overflow: hidden;
+}
 .box {
     margin: 20px;
     width: 800px;
