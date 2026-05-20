@@ -5,6 +5,10 @@
     href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@300;400;500;600&display=swap"
     rel="stylesheet"
   />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Emilys+Candy&display=swap"
+    rel="stylesheet"
+  />
   <div class="page" :class="{ 'fade-out': isLeaving }">
     <div class="bg-overlay" :class="{ 'bg-transition': isLeaving }"></div>
     <div class="content">
@@ -54,6 +58,7 @@ async function handleNavigate() {
   --mono: "IBM Plex Mono", monospace;
   --serif: "DM Serif Display", serif;
   --sans: "Sora", sans-serif;
+  --candy: "Emilys Candy", serif; 
 }
 
 .page {
@@ -136,29 +141,17 @@ body {
   100% {
     transform: translateY(0px);
   }
-  50% {
+  80% {
     transform: translateY(-10px);
-  }
-}
-
-@keyframes shimmer {
-  0%,
-  100% {
-    text-shadow: 0 0 8px rgba(160, 58, 200, 0.3);
-  }
-  50% {
-    text-shadow:
-      0 0 24px rgba(130, 54, 165, 0.8),
-      0 0 48px rgba(240, 122, 220, 0.4);
   }
 }
 
 @keyframes borderGlow {
   0%,
   100% {
-    box-shadow: 0 0 6px rgba(131, 58, 200, 0.3);
+    box-shadow: 0 0 6px rgba(71, 6, 133, 0.3);
   }
-  50% {
+  80% {
     box-shadow: 0 0 18px rgba(160, 58, 200, 0.7);
   }
 }
@@ -172,18 +165,21 @@ body {
 }
 
 .title {
-  font-family: var(--serif);
+  font-family: var(--candy);
   font-weight: 400;
   line-height: 1.2;
-  color: var(--navy);
   text-align: center;
   font-size: clamp(2rem, 8vw, 80px);
-  margin-top: 1.5rem;
+  margin-top: 6rem;
   border-radius: 8px;
   padding: 0.5rem 1.5rem;
   animation:
     fadeUp 0.8s ease 0.3s both,
     shimmer 3s ease-in-out 1.2s infinite;
+  color: #8f335e;
+  text-shadow:
+    0 2px 4px rgba(83, 30, 107, 0.8),
+    0 0 20px rgba(86, 23, 117, 0.5);
 }
 
 .button-link {
