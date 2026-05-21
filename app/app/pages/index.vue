@@ -37,7 +37,7 @@ async function handleNavigate() {
 
 <style>
 :root {
-  --navy: #6b3a75;
+  --coral: rgba(107, 30, 78, 0.8);
   --navy2: #1a2d42;
   --navy3: #243650;
   --cream: #f9f6ef;
@@ -149,10 +149,10 @@ body {
 @keyframes borderGlow {
   0%,
   100% {
-    box-shadow: 0 0 6px rgba(71, 6, 133, 0.3);
+    box-shadow: 0 0 6px var;
   }
   80% {
-    box-shadow: 0 0 18px rgba(160, 58, 200, 0.7);
+    box-shadow: 0 0 18px rgba(138, 16, 87, 0.7);
   }
 }
 
@@ -169,7 +169,7 @@ body {
   font-weight: 400;
   line-height: 1.2;
   text-align: center;
-  font-size: clamp(2rem, 8vw, 80px);
+  font-size: clamp(2rem, 8vw, 90px);
   margin-top: 6rem;
   border-radius: 8px;
   padding: 0.5rem 1.5rem;
@@ -178,8 +178,8 @@ body {
     shimmer 3s ease-in-out 1.2s infinite;
   color: #8f335e;
   text-shadow:
-    0 2px 4px rgba(83, 30, 107, 0.8),
-    0 0 20px rgba(86, 23, 117, 0.5);
+    0 2px 4px rgba(107, 30, 78, 0.8),
+    0 0 20px rgba(117, 23, 86, 0.5);
 }
 
 .button-link {
