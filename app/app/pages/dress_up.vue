@@ -1,8 +1,10 @@
 <template>
+  <button class="hats">hats</button>
   <div class="box"></div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+</script>
 
 <style>
 :root {
