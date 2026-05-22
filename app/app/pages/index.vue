@@ -186,7 +186,7 @@ body {
   font-family: var(--sans);
   font-size: 1rem;
   font-weight: 500;
-  color: var(--navy);
+  color: var(--coral);
   backdrop-filter: blur(6px);
   border-radius: 8px;
   padding: 0.75rem 2rem;
@@ -204,7 +204,7 @@ body {
 }
 
 .button-link:hover {
-  background-color: var(--navy);
+  background-color: var(--coral);
   color: var(--gold);
   transform: scale(1.05);
 }
