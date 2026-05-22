@@ -1,11 +1,33 @@
 <template>
-  <button class="hats">hats</button>
-  <div class="box"></div>
+  <div class="box">
+    <img 
+        v-for="piece in costumePieces" 
+        :key="piece.id"
+        :src="piece.image_path"
+        :alt="piece.display_name"
+        class="w-48 h-48"
+    />
+  </div>
+
 </template>
 
 <script setup lang="ts">
-</script>
+  import { supabase } from '~/utils/supabase'
 
+  const costumePieces = ref<any[]>([])
+
+  const { data } = await supabase
+      .from('dress_pieces') 
+      .select('*')
+      console.log(data)
+
+costumePieces.value = (data ?? []).map(piece => ({
+    ...piece,
+    image_path: supabase.storage
+        .from('dress_pieces')  
+        .getPublicUrl(piece.image_path).data.publicUrl
+}))  
+</script>
 <style>
 :root {
   --navy: #6b3a75;
