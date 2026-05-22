@@ -1,33 +1,55 @@
 <template>
   <div class="box">
     <img 
-        v-for="piece in costumePieces" 
+        v-for="piece in dressPieces" 
+        :key="piece.id"
+        :src="piece.image_path"
+        :alt="piece.display_name"
+        class="w-48 h-48"
+    />
+
+     <img 
+        v-for="piece in shoePieces" 
         :key="piece.id"
         :src="piece.image_path"
         :alt="piece.display_name"
         class="w-48 h-48"
     />
   </div>
-
 </template>
 
 <script setup lang="ts">
   import { supabase } from '~/utils/supabase'
 
-  const costumePieces = ref<any[]>([])
+  const dressPieces = ref<any[]>([])
 
-  const { data } = await supabase
+  const { data: dressData } = await supabase
       .from('dress_pieces') 
       .select('*')
-      console.log(data)
 
-costumePieces.value = (data ?? []).map(piece => ({
-    ...piece,
-    image_path: supabase.storage
-        .from('dress_pieces')  
-        .getPublicUrl(piece.image_path).data.publicUrl
-}))  
+  dressPieces.value = (dressData ?? []).map(piece => ({
+      ...piece,
+      image_path: supabase.storage
+          .from('dress_pieces')  
+          .getPublicUrl(piece.image_path).data.publicUrl
+  }))  
+
+
+
+  const shoePieces = ref<any[]>([])
+
+  const { data: shoeData } = await supabase
+      .from('shoe_pieces') 
+      .select('*')
+
+  shoePieces.value = (shoeData ?? []).map(piece => ({
+      ...piece,
+      image_path: supabase.storage
+          .from('shoe_pieces')  
+          .getPublicUrl(piece.image_path).data.publicUrl
+  }))  
 </script>
+
 <style>
 :root {
   --navy: #6b3a75;
