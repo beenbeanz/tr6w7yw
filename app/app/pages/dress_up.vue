@@ -8,8 +8,16 @@
         class="w-48 h-48"
     />
 
-     <img 
+    <img 
         v-for="piece in shoePieces" 
+        :key="piece.id"
+        :src="piece.image_path"
+        :alt="piece.display_name"
+        class="w-48 h-48"
+    />
+
+    <img 
+        v-for="piece in accessoriesPieces" 
         :key="piece.id"
         :src="piece.image_path"
         :alt="piece.display_name"
@@ -19,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-  import { supabase } from '~/utils/supabase'
+import { supabase } from '~/utils/supabase'
 
   const dressPieces = ref<any[]>([])
 
@@ -41,11 +49,28 @@
   const { data: shoeData } = await supabase
       .from('shoe_pieces') 
       .select('*')
+    
 
   shoePieces.value = (shoeData ?? []).map(piece => ({
       ...piece,
       image_path: supabase.storage
           .from('shoe_pieces')  
+          .getPublicUrl(piece.image_path).data.publicUrl
+  }))  
+
+
+  const accessoriesPieces = ref<any[]>([])
+
+  const { data: accessoriesData } = await supabase
+      .from('accessories_pieces') 
+      .select('*')
+    
+  console.log(accessoriesData)
+
+  accessoriesPieces.value = (accessoriesData ?? []).map(piece => ({
+      ...piece,
+      image_path: supabase.storage
+          .from('accessories_pieces')  
           .getPublicUrl(piece.image_path).data.publicUrl
   }))  
 </script>
