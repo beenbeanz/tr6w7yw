@@ -3,24 +3,74 @@
     <div v-for="piece in costumePieces" :key="piece.id" class="piece-card">
       <img :src="piece.image_path" :alt="piece.display_name" />
     </div>
+
+    <img 
+        v-for="piece in shoePieces" 
+        :key="piece.id"
+        :src="piece.image_path"
+        :alt="piece.display_name"
+        class="w-48 h-48"
+    />
+
+    <img 
+        v-for="piece in accessoriesPieces" 
+        :key="piece.id"
+        :src="piece.image_path"
+        :alt="piece.display_name"
+        class="w-48 h-48"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { supabase } from "~/utils/supabase";
+import { supabase } from '~/utils/supabase'
 
-const costumePieces = ref<any[]>([]);
+  const dressPieces = ref<any[]>([])
 
-const { data } = await supabase.from("dress_pieces").select("*");
-console.log(data);
+  const { data: dressData } = await supabase
+      .from('dress_pieces') 
+      .select('*')
 
-costumePieces.value = (data ?? []).map((piece) => ({
-  ...piece,
-  image_path: supabase.storage
-    .from("dress_pieces")
-    .getPublicUrl(piece.image_path).data.publicUrl,
-}));
+  dressPieces.value = (dressData ?? []).map(piece => ({
+      ...piece,
+      image_path: supabase.storage
+          .from('dress_pieces')  
+          .getPublicUrl(piece.image_path).data.publicUrl
+  }))  
+
+
+
+  const shoePieces = ref<any[]>([])
+
+  const { data: shoeData } = await supabase
+      .from('shoe_pieces') 
+      .select('*')
+    
+
+  shoePieces.value = (shoeData ?? []).map(piece => ({
+      ...piece,
+      image_path: supabase.storage
+          .from('shoe_pieces')  
+          .getPublicUrl(piece.image_path).data.publicUrl
+  }))  
+
+
+  const accessoriesPieces = ref<any[]>([])
+
+  const { data: accessoriesData } = await supabase
+      .from('accessories_pieces') 
+      .select('*')
+    
+  console.log(accessoriesData)
+
+  accessoriesPieces.value = (accessoriesData ?? []).map(piece => ({
+      ...piece,
+      image_path: supabase.storage
+          .from('accessories_pieces')  
+          .getPublicUrl(piece.image_path).data.publicUrl
+  }))  
 </script>
+
 <style>
 :root {
   --navy: #6b3a75;
