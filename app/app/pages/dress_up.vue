@@ -1,12 +1,8 @@
 <template>
   <div class="box">
-    <img 
-        v-for="piece in dressPieces" 
-        :key="piece.id"
-        :src="piece.image_path"
-        :alt="piece.display_name"
-        class="w-48 h-48"
-    />
+    <div v-for="piece in costumePieces" :key="piece.id" class="piece-card">
+      <img :src="piece.image_path" :alt="piece.display_name" />
+    </div>
 
     <img 
         v-for="piece in shoePieces" 
@@ -102,11 +98,30 @@ import { supabase } from '~/utils/supabase'
 html {
   overflow: hidden;
 }
+
+.piece-card {
+  width: 192px;
+  height: 192px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.piece-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* or cover if you want it to fill */
+}
 .box {
-    margin: 20px;
-    width: 800px;
-    height: 950px;
- background-color: rgb(from var(--navy) r g b / 0.8);
+  margin: 20px;
+  width: 800px;
+  height: 950px;
+  background-color: rgb(from var(--navy) r g b / 0.8);
   animation:
     fadeUp 0.8s ease 0.7s both,
     borderGlow 2.5s ease-in-out 1.5s infinite;
@@ -114,6 +129,10 @@ html {
     background-color 0.2s,
     color 0.2s,
     transform 0.15s;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 20px;
 }
 * {
   margin: 0;
