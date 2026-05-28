@@ -1,6 +1,7 @@
 <template>
   <div class="box">
-   <!--<div v-for="piece in dressPieces" :key="piece.id" class="piece-card">
+
+   <div v-for="piece in dressPieces" :key="piece.id" class="piece-card">
       <img :src="piece.image_path" :alt="piece.display_name" />
     </div>
 
@@ -8,20 +9,14 @@
       <img :src="piece.image_path" :alt="piece.display_name" />
     </div>
 
-
     <div v-for="piece in accessoriesPieces" :key="piece.id" class="piece-card">
       <img :src="piece.image_path" :alt="piece.display_name" />
-    </div>-->
+    </div>
 
-
-    <img 
-        v-for="piece in accessoriesPieces" 
-        :key="piece.id"
-        :src="piece.image_path"
-        :alt="piece.display_name"
-        class="w-48 h-48"
-    />
   </div>
+      <img src="/mannequin.png" alt="bare mannequin" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 1;" />
+
+
 </template>
 
 <script setup lang="ts">
@@ -34,6 +29,8 @@
   const { data: dressData } = await supabase
       .from('dress_pieces') 
       .select('*')
+                  console.log(dressData)
+
   dressPieces.value = (dressData ?? []).map(piece => ({
       ...piece,
       image_path: supabase.storage
@@ -44,24 +41,26 @@
   const { data: shoeData } = await supabase
       .from('shoe_pieces') 
       .select('*')
+            console.log(shoeData)
+
   shoePieces.value = (shoeData ?? []).map(piece => ({
       ...piece,
       image_path: supabase.storage
-          .from('shoe_pieces')  
+          .from('shoe-pieces')  
           .getPublicUrl(piece.image_path).data.publicUrl
   }))  
 
   const { data: accessoriesData } = await supabase
       .from('accessories_pieces') 
       .select('*')
-      console.log(accessoriesData)
+                  console.log(accessoriesData)
+
   accessoriesPieces.value = (accessoriesData ?? []).map(piece => ({
       ...piece,
       image_path: supabase.storage
-          .from('accessories_pieces')  
+          .from('acessories-pieces')  
           .getPublicUrl(piece.image_path).data.publicUrl
   }))  
-
 </script>
 
 <style>
