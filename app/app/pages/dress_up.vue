@@ -1,35 +1,35 @@
 <template>
   <div class="box">
-    <div v-for="piece in costumePieces" :key="piece.id" class="piece-card">
+
+   <div v-for="piece in dressPieces" :key="piece.id" class="piece-card">
       <img :src="piece.image_path" :alt="piece.display_name" />
     </div>
 
-    <img 
-        v-for="piece in shoePieces" 
-        :key="piece.id"
-        :src="piece.image_path"
-        :alt="piece.display_name"
-        class="w-48 h-48"
-    />
+    <div v-for="piece in shoePieces" :key="piece.id" class="piece-card">
+      <img :src="piece.image_path" :alt="piece.display_name" />
+    </div>
 
-    <img 
-        v-for="piece in accessoriesPieces" 
-        :key="piece.id"
-        :src="piece.image_path"
-        :alt="piece.display_name"
-        class="w-48 h-48"
-    />
+    <div v-for="piece in accessoriesPieces" :key="piece.id" class="piece-card">
+      <img :src="piece.image_path" :alt="piece.display_name" />
+    </div>
+
   </div>
+      <img src="/mannequin.png" alt="bare mannequin" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 1;" />
+
+
 </template>
 
 <script setup lang="ts">
-import { supabase } from '~/utils/supabase'
+  import { supabase } from '~/utils/supabase'
 
   const dressPieces = ref<any[]>([])
+  const shoePieces = ref<any[]>([])
+  const accessoriesPieces = ref<any[]>([])
 
   const { data: dressData } = await supabase
       .from('dress_pieces') 
       .select('*')
+                  console.log(dressData)
 
   dressPieces.value = (dressData ?? []).map(piece => ({
       ...piece,
@@ -38,35 +38,27 @@ import { supabase } from '~/utils/supabase'
           .getPublicUrl(piece.image_path).data.publicUrl
   }))  
 
-
-
-  const shoePieces = ref<any[]>([])
-
   const { data: shoeData } = await supabase
       .from('shoe_pieces') 
       .select('*')
-    
+            console.log(shoeData)
 
   shoePieces.value = (shoeData ?? []).map(piece => ({
       ...piece,
       image_path: supabase.storage
-          .from('shoe_pieces')  
+          .from('shoe-pieces')  
           .getPublicUrl(piece.image_path).data.publicUrl
   }))  
-
-
-  const accessoriesPieces = ref<any[]>([])
 
   const { data: accessoriesData } = await supabase
       .from('accessories_pieces') 
       .select('*')
-    
-  console.log(accessoriesData)
+                  console.log(accessoriesData)
 
   accessoriesPieces.value = (accessoriesData ?? []).map(piece => ({
       ...piece,
       image_path: supabase.storage
-          .from('accessories_pieces')  
+          .from('acessories-pieces')  
           .getPublicUrl(piece.image_path).data.publicUrl
   }))  
 </script>
@@ -115,7 +107,7 @@ html {
 .piece-card img {
   width: 100%;
   height: 100%;
-  object-fit: contain; /* or cover if you want it to fill */
+  object-fit: contain;
 }
 .box {
   margin: 20px;
