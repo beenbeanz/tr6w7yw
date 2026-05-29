@@ -1,21 +1,21 @@
 <template>
   <div class="box">
 
-   <div v-for="piece in dressPieces" :key="piece.id" class="piece-card">
+   <div v-for="piece in dressPieces" :key="piece.id" class="piece-card" v-on:click="displayOnScreen('dress', piece)">
       <img :src="piece.image_path" :alt="piece.display_name" />
     </div>
 
-    <div v-for="piece in shoePieces" :key="piece.id" class="piece-card">
+    <div v-for="piece in shoePieces" :key="piece.id" class="piece-card" v-on:click="displayOnScreen('shoe', piece)">
       <img :src="piece.image_path" :alt="piece.display_name" />
     </div>
 
-    <div v-for="piece in accessoriesPieces" :key="piece.id" class="piece-card">
+    <div v-for="piece in accessoriesPieces" :key="piece.id" class="piece-card" v-on:click="displayOnScreen('accessories', piece)">
       <img :src="piece.image_path" :alt="piece.display_name" />
     </div>
 
   </div>
-      <img src="/mannequin.png" alt="bare mannequin" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 1;" />
-
+  
+  <img src="/mannequin.png" alt="bare mannequin" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 1;" />
 
 </template>
 
@@ -27,40 +27,44 @@
   const accessoriesPieces = ref<any[]>([])
 
   const { data: dressData } = await supabase
-      .from('dress_pieces') 
-      .select('*')
-                  console.log(dressData)
-
+    .from('dress_pieces') 
+    .select('*')
   dressPieces.value = (dressData ?? []).map(piece => ({
-      ...piece,
-      image_path: supabase.storage
-          .from('dress_pieces')  
-          .getPublicUrl(piece.image_path).data.publicUrl
+    ...piece,
+    image_path: supabase.storage
+      .from('dress_pieces')  
+      .getPublicUrl(piece.image_path).data.publicUrl
   }))  
 
   const { data: shoeData } = await supabase
-      .from('shoe_pieces') 
-      .select('*')
-            console.log(shoeData)
-
+    .from('shoe_pieces') 
+    .select('*')
   shoePieces.value = (shoeData ?? []).map(piece => ({
-      ...piece,
-      image_path: supabase.storage
-          .from('shoe-pieces')  
-          .getPublicUrl(piece.image_path).data.publicUrl
+    ...piece,
+    image_path: supabase.storage
+      .from('shoe-pieces')  
+      .getPublicUrl(piece.image_path).data.publicUrl
   }))  
 
   const { data: accessoriesData } = await supabase
-      .from('accessories_pieces') 
-      .select('*')
-                  console.log(accessoriesData)
-
+    .from('accessories_pieces') 
+    .select('*')
   accessoriesPieces.value = (accessoriesData ?? []).map(piece => ({
-      ...piece,
-      image_path: supabase.storage
-          .from('acessories-pieces')  
-          .getPublicUrl(piece.image_path).data.publicUrl
+    ...piece,
+    image_path: supabase.storage
+      .from('acessories-pieces')  
+      .getPublicUrl(piece.image_path).data.publicUrl
   }))  
+
+  const selectedDress = ref<any>(null)
+  const selectedShoe = ref<any>(null)
+  const selectedAccessories = ref<any>(null)
+
+  function displayOnScreen(type: string, piece: any) {
+    if (type === 'dress') selectedDress.value = piece
+    if (type === 'shoe') selectedShoe.value = piece
+    if (type === 'accessories') selectedAccessories.value = piece
+  }
 </script>
 
 <style>
@@ -90,7 +94,6 @@
 html {
   overflow: hidden;
 }
-
 .piece-card {
   width: 192px;
   height: 192px;
@@ -139,5 +142,9 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   z-index: 0;
+}
+.piece-card:hover {
+  transform: scale(1.05);
+  cursor: pointer;
 }
 </style>
