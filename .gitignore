@@ -1,2 +1,30 @@
+# nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+# node dependencies
 node_modules/
+
+# logs
+logs
+*.logs
+
+# 
+.DS_store
+.fleet
+.idea
+
+#
+.env
+.env.*
+!.env.example
+
+# supabase
+supabase/
+.supabase/
+
 package-lock.json
