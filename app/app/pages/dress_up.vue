@@ -1,7 +1,8 @@
 <template>
   <div class="logo-container">
-        <img src="/logo.png" alt="triple t logo" class="logo" />
-      </div>
+    <img src="/logo.png" alt="triple t logo" class="logo" />
+  </div>
+
   <div class="box">
     <div class="category-tabs">
       <button
@@ -15,35 +16,31 @@
     </div>
 
     <div class="pieces-grid">
-      <div v-for="piece in activePieces" :key="piece.id" class="piece-card">
+      <div v-for="piece in activePieces" :key="piece.id" class="piece-card" @click="displayOnScreen(activeCategory, piece)">
         <img :src="piece.image_path" :alt="piece.display_name" />
       </div>
-
-   <div v-for="piece in dressPieces" :key="piece.id" class="piece-card" v-on:click="displayOnScreen('dress', piece)">
-      <img :src="piece.image_path" :alt="piece.display_name" />
-    </div>
-
-    <div v-for="piece in shoePieces" :key="piece.id" class="piece-card" v-on:click="displayOnScreen('shoe', piece)">
-      <img :src="piece.image_path" :alt="piece.display_name" />
-    </div>
-
-    <div v-for="piece in accessoriesPieces" :key="piece.id" class="piece-card" v-on:click="displayOnScreen('accessories', piece)">
-      <img :src="piece.image_path" :alt="piece.display_name" />
     </div>
   </div>
   
   <div class="mannequinContainer">
     <img src="/mannequin.png" alt="bare mannequin" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 1;" />
-
-    <img v-if="selectedDress" :src="selectedDress.image_path" :alt="selectedDress.display_name" class="dressOverlay"style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 1;" >
-    <img v-if="selectedShoe" :src="selectedShoe.image_path" :alt="selectedShoe.display_name" class="shoeOverlay" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 1;" >
-    <img v-if="selectedAccessories" :src="selectedAccessories.image_path" :alt="selectedAccessories.display_name" class="accessoriesverlay" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 1;" >
+    <img v-if="selectedDress" :src="selectedDress.image_path" :alt="selectedDress.display_name" class="dressOverlay" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 2;" />
+    <img v-if="selectedShoe" :src="selectedShoe.image_path" :alt="selectedShoe.display_name" class="shoeOverlay" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 1;" />
+    <img v-if="selectedAccessories" :src="selectedAccessories.image_path" :alt="selectedAccessories.display_name" class="accessoriesOverlay" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 3;" />
   </div>
-
 </template>
 
+
 <script setup lang="ts">
+  import { ref } from 'vue'  
   import { supabase } from '~/utils/supabase'
+
+  const activeCategory = ref('dress')
+  const tabs = [
+    { label: 'Dress', value: 'dress' },
+    { label: 'Shoes', value: 'shoe' },
+    { label: 'Accessories', value: 'accessories' }
+  ]
 
   const dressPieces = ref<any[]>([])
   const shoePieces = ref<any[]>([])
@@ -83,7 +80,15 @@
   const selectedShoe = ref<any>(null)
   const selectedAccessories = ref<any>(null)
 
+  const activePieces = computed(() => {
+    if (activeCategory.value === 'dress') return dressPieces.value
+    if (activeCategory.value === 'shoe') return shoePieces.value
+    if (activeCategory.value === 'accessories') return accessoriesPieces.value
+    return []
+  })
+
   function displayOnScreen(type: string, piece: any) {
+    console.log('Clicked piece:', type, piece)
     if (type === 'dress') selectedDress.value = piece
     if (type === 'shoe') selectedShoe.value = piece
     if (type === 'accessories') selectedAccessories.value = piece
