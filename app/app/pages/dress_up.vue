@@ -1,5 +1,23 @@
 <template>
+  <div class="logo-container">
+        <img src="/logo.png" alt="triple t logo" class="logo" />
+      </div>
   <div class="box">
+    <div class="category-tabs">
+      <button
+        v-for="tab in tabs"
+        :key="tab.value"
+        :class="['tab-btn', { active: activeCategory === tab.value }]"
+        @click="activeCategory = tab.value"
+      >
+        {{ tab.label }}
+      </button>
+    </div>
+
+    <div class="pieces-grid">
+      <div v-for="piece in activePieces" :key="piece.id" class="piece-card">
+        <img :src="piece.image_path" :alt="piece.display_name" />
+      </div>
 
    <div v-for="piece in dressPieces" :key="piece.id" class="piece-card" v-on:click="displayOnScreen('dress', piece)">
       <img :src="piece.image_path" :alt="piece.display_name" />
@@ -12,7 +30,6 @@
     <div v-for="piece in accessoriesPieces" :key="piece.id" class="piece-card" v-on:click="displayOnScreen('accessories', piece)">
       <img :src="piece.image_path" :alt="piece.display_name" />
     </div>
-
   </div>
   
   <div class="mannequinContainer">
@@ -88,7 +105,7 @@
 }
 :root {
   --navy: #6b3a75;
-  --navy2: #1a2d42;
+  --navy2: #2d1a42;
   --navy3: #243650;
   --cream: #f9f6ef;
   --cream2: #f0ebe0;
@@ -112,9 +129,53 @@
 html {
   overflow: hidden;
 }
+.logo-container {
+  height: 0px;
+}
+.logo {
+  width: clamp(100px, 18.75vw, 250px);
+  height: auto;
+  animation:
+    fadeIn 1s ease both,
+    float 4s ease-in-out 1s infinite;
+    margin-left: 1400px;
+}
+.category-tabs {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--cream);
+  font-family: var(--sans);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.tab-btn.active {
+  background: var(--navy2);
+  border-color: var(--navy2);
+  color: var(--cream);
+  font-weight: 550;
+}
+
 .piece-card {
-  width: 192px;
-  height: 192px;
+  width: 200px;
+  height: 200px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   overflow: hidden;
@@ -131,21 +192,32 @@ html {
   object-fit: contain;
 }
 .box {
-  margin: 20px;
-  width: 800px;
-  height: 950px;
-  background-color: rgb(from var(--navy) r g b / 0.8);
-  animation:
-    fadeUp 0.8s ease 0.7s both,
-    borderGlow 2.5s ease-in-out 1.5s infinite;
+  margin: 12px;
+  width: 675px;
+  height: 980px;
+  background-color: rgb(from var(--navy) r g b / 0.75);
   transition:
     background-color 0.2s,
     color 0.2s,
     transform 0.15s;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 16px;
   padding: 20px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.pieces-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  overflow-y: auto;
+  flex: 1;
+  align-content: flex-start;
+}
+.pieces-grid::-webkit-scrollbar {
+  display: none;
 }
 * {
   margin: 0;
