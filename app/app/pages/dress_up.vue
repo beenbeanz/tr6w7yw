@@ -18,79 +18,91 @@
       <div v-for="piece in activePieces" :key="piece.id" class="piece-card">
         <img :src="piece.image_path" :alt="piece.display_name" />
       </div>
+
+   <div v-for="piece in dressPieces" :key="piece.id" class="piece-card" v-on:click="displayOnScreen('dress', piece)">
+      <img :src="piece.image_path" :alt="piece.display_name" />
+    </div>
+
+    <div v-for="piece in shoePieces" :key="piece.id" class="piece-card" v-on:click="displayOnScreen('shoe', piece)">
+      <img :src="piece.image_path" :alt="piece.display_name" />
+    </div>
+
+    <div v-for="piece in accessoriesPieces" :key="piece.id" class="piece-card" v-on:click="displayOnScreen('accessories', piece)">
+      <img :src="piece.image_path" :alt="piece.display_name" />
     </div>
   </div>
+  
+  <div class="mannequinContainer">
+    <img src="/mannequin.png" alt="bare mannequin" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 1;" />
 
-  <img
-    src="/mannequin.png"
-    alt="bare mannequin"
-    style="
-      position: absolute;
-      top: 70%;
-      left: 65%;
-      transform: translate(-50%, -58%);
-      width: 620px;
-      height: auto;
-      z-index: 1;
-    "
-  />
+    <img v-if="selectedDress" :src="selectedDress.image_path" :alt="selectedDress.display_name" class="dressOverlay"style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 1;" >
+    <img v-if="selectedShoe" :src="selectedShoe.image_path" :alt="selectedShoe.display_name" class="shoeOverlay" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 1;" >
+    <img v-if="selectedAccessories" :src="selectedAccessories.image_path" :alt="selectedAccessories.display_name" class="accessoriesverlay" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 1;" >
+  </div>
+
 </template>
 
 <script setup lang="ts">
-import { supabase } from "~/utils/supabase";
+  import { supabase } from '~/utils/supabase'
 
-const activeCategory = ref("dress");
+  const dressPieces = ref<any[]>([])
+  const shoePieces = ref<any[]>([])
+  const accessoriesPieces = ref<any[]>([])
 
-const tabs: { label: string; value: "dress" | "shoes" | "accessories" }[] = [
-  { label: "Dress", value: "dress" },
-  { label: "Shoes", value: "shoes" },
-  { label: "Accessories", value: "accessories" },
-];
+  const { data: dressData } = await supabase
+    .from('dress_pieces') 
+    .select('*')
+  dressPieces.value = (dressData ?? []).map(piece => ({
+    ...piece,
+    image_path: supabase.storage
+      .from('dress_pieces')  
+      .getPublicUrl(piece.image_path).data.publicUrl
+  }))  
 
-const activePieces = computed(() => {
-  if (activeCategory.value === "dress") return dressPieces.value;
-  if (activeCategory.value === "shoes") return shoePieces.value;
-  return accessoriesPieces.value;
-});
+  const { data: shoeData } = await supabase
+    .from('shoe_pieces') 
+    .select('*')
+  shoePieces.value = (shoeData ?? []).map(piece => ({
+    ...piece,
+    image_path: supabase.storage
+      .from('shoe-pieces')  
+      .getPublicUrl(piece.image_path).data.publicUrl
+  }))  
 
-const dressPieces = ref<any[]>([]);
-const shoePieces = ref<any[]>([]);
-const accessoriesPieces = ref<any[]>([]);
+  const { data: accessoriesData } = await supabase
+    .from('accessories_pieces') 
+    .select('*')
+  accessoriesPieces.value = (accessoriesData ?? []).map(piece => ({
+    ...piece,
+    image_path: supabase.storage
+      .from('acessories-pieces')  
+      .getPublicUrl(piece.image_path).data.publicUrl
+  }))  
 
-const { data: dressData } = await supabase.from("dress_pieces").select("*");
-console.log(dressData);
+  const selectedDress = ref<any>(null)
+  const selectedShoe = ref<any>(null)
+  const selectedAccessories = ref<any>(null)
 
-dressPieces.value = (dressData ?? []).map((piece) => ({
-  ...piece,
-  image_path: supabase.storage
-    .from("dress_pieces")
-    .getPublicUrl(piece.image_path).data.publicUrl,
-}));
-
-const { data: shoeData } = await supabase.from("shoe_pieces").select("*");
-console.log(shoeData);
-
-shoePieces.value = (shoeData ?? []).map((piece) => ({
-  ...piece,
-  image_path: supabase.storage
-    .from("shoe-pieces")
-    .getPublicUrl(piece.image_path).data.publicUrl,
-}));
-
-const { data: accessoriesData } = await supabase
-  .from("accessories_pieces")
-  .select("*");
-console.log(accessoriesData);
-
-accessoriesPieces.value = (accessoriesData ?? []).map((piece) => ({
-  ...piece,
-  image_path: supabase.storage
-    .from("acessories-pieces")
-    .getPublicUrl(piece.image_path).data.publicUrl,
-}));
+  function displayOnScreen(type: string, piece: any) {
+    if (type === 'dress') selectedDress.value = piece
+    if (type === 'shoe') selectedShoe.value = piece
+    if (type === 'accessories') selectedAccessories.value = piece
+  }
 </script>
 
 <style>
+.dress-overlay,
+.shoe-overlay,
+.accessories-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1000px;
+  height: 1000px;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 10;
+}
 :root {
   --navy: #6b3a75;
   --navy2: #2d1a42;
@@ -220,5 +232,9 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   z-index: 0;
+}
+.piece-card:hover {
+  transform: scale(1.05);
+  cursor: pointer;
 }
 </style>
