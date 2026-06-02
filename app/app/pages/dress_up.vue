@@ -1,7 +1,8 @@
 <template>
   <div class="logo-container">
-        <img src="/logo.png" alt="triple t logo" class="logo" />
-      </div>
+    <img src="/logo.png" alt="triple t logo" class="logo" />
+  </div>
+
   <div class="box">
     <div class="category-tabs">
       <button
@@ -15,82 +16,98 @@
     </div>
 
     <div class="pieces-grid">
-      <div v-for="piece in activePieces" :key="piece.id" class="piece-card">
+      <div v-for="piece in activePieces" :key="piece.id" class="piece-card" @click="displayOnScreen(activeCategory, piece)">
         <img :src="piece.image_path" :alt="piece.display_name" />
       </div>
     </div>
   </div>
-
-  <img
-    src="/mannequin.png"
-    alt="bare mannequin"
-    style="
-      position: absolute;
-      top: 70%;
-      left: 65%;
-      transform: translate(-50%, -58%);
-      width: 620px;
-      height: auto;
-      z-index: 1;
-    "
-  />
+  
+  <div class="mannequinContainer">
+    <img src="/mannequin.png" alt="bare mannequin" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 1;" />
+    <img v-if="selectedDress" :src="selectedDress.image_path" :alt="selectedDress.display_name" class="dressOverlay" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 2;" />
+    <img v-if="selectedShoe" :src="selectedShoe.image_path" :alt="selectedShoe.display_name" class="shoeOverlay" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 1;" />
+    <img v-if="selectedAccessories" :src="selectedAccessories.image_path" :alt="selectedAccessories.display_name" class="accessoriesOverlay" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 3;" />
+  </div>
 </template>
 
+
 <script setup lang="ts">
-import { supabase } from "~/utils/supabase"
+  import { ref } from 'vue'  
+  import { supabase } from '~/utils/supabase'
 
-const activeCategory = ref("dress");
+  const activeCategory = ref('dress')
+  const tabs = [
+    { label: 'Dress', value: 'dress' },
+    { label: 'Shoes', value: 'shoe' },
+    { label: 'Accessories', value: 'accessories' }
+  ]
 
-const tabs: { label: string; value: "dress" | "shoes" | "accessories" }[] = [
-  { label: "Dress", value: "dress" },
-  { label: "Shoes", value: "shoes" },
-  { label: "Accessories", value: "accessories" },
-];
+  const dressPieces = ref<any[]>([])
+  const shoePieces = ref<any[]>([])
+  const accessoriesPieces = ref<any[]>([])
 
-const activePieces = computed(() => {
-  if (activeCategory.value === "dress") return dressPieces.value;
-  if (activeCategory.value === "shoes") return shoePieces.value;
-  return accessoriesPieces.value;
-});
+  const { data: dressData } = await supabase
+    .from('dress_pieces') 
+    .select('*')
+  dressPieces.value = (dressData ?? []).map(piece => ({
+    ...piece,
+    image_path: supabase.storage
+      .from('dress_pieces')  
+      .getPublicUrl(piece.image_path).data.publicUrl
+  }))  
 
-const dressPieces = ref<any[]>([]);
-const shoePieces = ref<any[]>([]);
-const accessoriesPieces = ref<any[]>([]);
+  const { data: shoeData } = await supabase
+    .from('shoe_pieces') 
+    .select('*')
+  shoePieces.value = (shoeData ?? []).map(piece => ({
+    ...piece,
+    image_path: supabase.storage
+      .from('shoe-pieces')  
+      .getPublicUrl(piece.image_path).data.publicUrl
+  }))  
 
-const { data: dressData } = await supabase.from("dress_pieces").select("*");
-console.log(dressData);
+  const { data: accessoriesData } = await supabase
+    .from('accessories_pieces') 
+    .select('*')
+  accessoriesPieces.value = (accessoriesData ?? []).map(piece => ({
+    ...piece,
+    image_path: supabase.storage
+      .from('acessories-pieces')  
+      .getPublicUrl(piece.image_path).data.publicUrl
+  }))  
 
-dressPieces.value = (dressData ?? []).map((piece) => ({
-  ...piece,
-  image_path: supabase.storage
-    .from("dress_pieces")
-    .getPublicUrl(piece.image_path).data.publicUrl,
-}));
+  const selectedDress = ref<any>(null)
+  const selectedShoe = ref<any>(null)
+  const selectedAccessories = ref<any>(null)
 
-const { data: shoeData } = await supabase.from("shoe_pieces").select("*");
-console.log(shoeData);
+  const activePieces = computed(() => {
+    if (activeCategory.value === 'dress') return dressPieces.value
+    if (activeCategory.value === 'shoe') return shoePieces.value
+    if (activeCategory.value === 'accessories') return accessoriesPieces.value
+    return []
+  })
 
-shoePieces.value = (shoeData ?? []).map((piece) => ({
-  ...piece,
-  image_path: supabase.storage
-    .from("shoe-pieces")
-    .getPublicUrl(piece.image_path).data.publicUrl,
-}));
-
-const { data: accessoriesData } = await supabase
-  .from("accessories_pieces")
-  .select("*");
-console.log(accessoriesData);
-
-accessoriesPieces.value = (accessoriesData ?? []).map((piece) => ({
-  ...piece,
-  image_path: supabase.storage
-    .from("acessories-pieces")
-    .getPublicUrl(piece.image_path).data.publicUrl,
-}));
+  function displayOnScreen(type: string, piece: any) {
+    console.log('Clicked piece:', type, piece)
+    if (type === 'dress') selectedDress.value = piece
+    if (type === 'shoe') selectedShoe.value = piece
+    if (type === 'accessories') selectedAccessories.value = piece
+  }
 </script>
 
 <style>
+.dress-overlay,
+.shoe-overlay,
+.accessories-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1000px;
+  height: 1000px;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 10;
+}
 :root {
   --navy: #6b3a75;
   --navy2: #2d1a42;
@@ -221,5 +238,9 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   z-index: 0;
+}
+.piece-card:hover {
+  transform: scale(1.05);
+  cursor: pointer;
 }
 </style>
