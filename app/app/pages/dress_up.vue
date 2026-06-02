@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { supabase } from "~/utils/supabase";
+import { supabase } from "~/utils/supabase"
 
 const activeCategory = ref("dress");
 
@@ -126,7 +126,8 @@ html {
   animation:
     fadeIn 1s ease both,
     float 4s ease-in-out 1s infinite;
-    margin-left: 1400px;
+    margin-left: 1290px;
+    padding-top: 150px;
 }
 .category-tabs {
   display: flex;
