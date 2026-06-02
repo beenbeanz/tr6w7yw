@@ -15,84 +15,183 @@
       </button>
     </div>
 
-    <div class="pieces-grid">
-      <div v-for="piece in activePieces" :key="piece.id" class="piece-card" @click="displayOnScreen(activeCategory, piece)">
-        <img :src="piece.image_path" :alt="piece.display_name" />
+    <div ref="scrollWrap" class="pieces-scroll-wrapper">
+      <div class="pieces-grid">
+        <div
+          v-for="piece in activePieces"
+          :key="piece.id"
+          class="piece-card"
+          @click="displayOnScreen(activeCategory, piece)"
+        >
+          <img :src="piece.image_path" :alt="piece.display_name" />
+        </div>
       </div>
     </div>
   </div>
-  
+
   <div class="mannequinContainer">
-    <img src="/mannequin.png" alt="bare mannequin" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 1;" />
-    <img v-if="selectedDress" :src="selectedDress.image_path" :alt="selectedDress.display_name" class="dressOverlay" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 2;" />
-    <img v-if="selectedShoe" :src="selectedShoe.image_path" :alt="selectedShoe.display_name" class="shoeOverlay" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 1;" />
-    <img v-if="selectedAccessories" :src="selectedAccessories.image_path" :alt="selectedAccessories.display_name" class="accessoriesOverlay" style="position: absolute; top: 70%; left: 70%; transform: translate(-50%, -50%); width: 677px; height: auto; z-index: 3;" />
+    <img
+      src="/mannequin.png"
+      alt="bare mannequin"
+      style="
+        position: absolute;
+        top: 62%;
+        left: 70%;
+        transform: translate(-50%, -50%);
+        width: 633px;
+        height: auto;
+        z-index: 1;
+      "
+    />
+    <img
+      v-if="selectedDress"
+      :src="selectedDress.image_path"
+      :alt="selectedDress.display_name"
+      class="dressOverlay"
+      style="
+        position: absolute;
+        top: 70%;
+        left: 73.5%;
+        transform: translate(-60%, -80%);
+        width: 500px;
+        height: auto;
+        z-index: 2;
+      "
+    />
+    <img
+      v-if="selectedShoe"
+      :src="selectedShoe.image_path"
+      :alt="selectedShoe.display_name"
+      class="shoeOverlay"
+      style="
+        position: absolute;
+        top: 70%;
+        left: 70%;
+        transform: translate(-50%, -50%);
+        width: 677px;
+        height: auto;
+        z-index: 1;
+      "
+    />
+    <img
+      v-if="selectedAccessories"
+      :src="selectedAccessories.image_path"
+      :alt="selectedAccessories.display_name"
+      class="accessoriesOverlay"
+      style="
+        position: absolute;
+        top: 70%;
+        left: 70%;
+        transform: translate(-50%, -50%);
+        width: 677px;
+        height: auto;
+        z-index: 3;
+      "
+    />
   </div>
+  <button class="finishButton">THURSDAY: FIND THE BUTTON WHERE IS THE BUTTON</button>
 </template>
 
-
 <script setup lang="ts">
-  import { ref } from 'vue'  
-  import { supabase } from '~/utils/supabase'
+import { ref, computed, onMounted, onUnmounted, nextTick } from "vue";
+import gsap from "gsap";
+import { supabase } from "~/utils/supabase";
 
-  const activeCategory = ref('dress')
-  const tabs = [
-    { label: 'Dress', value: 'dress' },
-    { label: 'Shoes', value: 'shoe' },
-    { label: 'Accessories', value: 'accessories' }
-  ]
+const activeCategory = ref("dress");
+const tabs = [
+  { label: "Dress", value: "dress" },
+  { label: "Shoes", value: "shoe" },
+  { label: "Accessories", value: "accessories" },
+];
 
-  const dressPieces = ref<any[]>([])
-  const shoePieces = ref<any[]>([])
-  const accessoriesPieces = ref<any[]>([])
+const dressPieces = ref<any[]>([]);
+const shoePieces = ref<any[]>([]);
+const accessoriesPieces = ref<any[]>([]);
 
-  const { data: dressData } = await supabase
-    .from('dress_pieces') 
-    .select('*')
-  dressPieces.value = (dressData ?? []).map(piece => ({
-    ...piece,
-    image_path: supabase.storage
-      .from('dress_pieces')  
-      .getPublicUrl(piece.image_path).data.publicUrl
-  }))  
+const { data: dressData } = await supabase.from("dress_pieces").select("*");
+dressPieces.value = (dressData ?? []).map((piece) => ({
+  ...piece,
+  image_path: supabase.storage
+    .from("dress_pieces")
+    .getPublicUrl(piece.image_path).data.publicUrl,
+}));
 
-  const { data: shoeData } = await supabase
-    .from('shoe_pieces') 
-    .select('*')
-  shoePieces.value = (shoeData ?? []).map(piece => ({
-    ...piece,
-    image_path: supabase.storage
-      .from('shoe-pieces')  
-      .getPublicUrl(piece.image_path).data.publicUrl
-  }))  
+const { data: shoeData } = await supabase.from("shoe_pieces").select("*");
+shoePieces.value = (shoeData ?? []).map((piece) => ({
+  ...piece,
+  image_path: supabase.storage
+    .from("shoe-pieces")
+    .getPublicUrl(piece.image_path).data.publicUrl,
+}));
 
-  const { data: accessoriesData } = await supabase
-    .from('accessories_pieces') 
-    .select('*')
-  accessoriesPieces.value = (accessoriesData ?? []).map(piece => ({
-    ...piece,
-    image_path: supabase.storage
-      .from('acessories-pieces')  
-      .getPublicUrl(piece.image_path).data.publicUrl
-  }))  
+const { data: accessoriesData } = await supabase
+  .from("accessories_pieces")
+  .select("*");
+accessoriesPieces.value = (accessoriesData ?? []).map((piece) => ({
+  ...piece,
+  image_path: supabase.storage
+    .from("acessories-pieces")
+    .getPublicUrl(piece.image_path).data.publicUrl,
+}));
 
-  const selectedDress = ref<any>(null)
-  const selectedShoe = ref<any>(null)
-  const selectedAccessories = ref<any>(null)
+const selectedDress = ref<any>(null);
+const selectedShoe = ref<any>(null);
+const selectedAccessories = ref<any>(null);
 
-  const activePieces = computed(() => {
-    if (activeCategory.value === 'dress') return dressPieces.value
-    if (activeCategory.value === 'shoe') return shoePieces.value
-    if (activeCategory.value === 'accessories') return accessoriesPieces.value
-    return []
-  })
+const activePieces = computed(() => {
+  if (activeCategory.value === "dress") return dressPieces.value;
+  if (activeCategory.value === "shoe") return shoePieces.value;
+  if (activeCategory.value === "accessories") return accessoriesPieces.value;
+  return [];
+});
 
-  function displayOnScreen(type: string, piece: any) {
-    console.log('Clicked piece:', type, piece)
-    if (type === 'dress') selectedDress.value = piece
-    if (type === 'shoe') selectedShoe.value = piece
-    if (type === 'accessories') selectedAccessories.value = piece
-  }
+// smooth scrolling for the inner pieces area
+const scrollWrap = ref<HTMLElement | null>(null);
+let targetScroll = 0;
+let maxScroll = 0;
+
+function updateMax() {
+  const el = scrollWrap.value;
+  if (!el) return;
+  maxScroll = Math.max(0, el.scrollHeight - el.clientHeight);
+  targetScroll = Math.max(0, Math.min(targetScroll, maxScroll));
+}
+
+function onWheel(e: WheelEvent) {
+  const el = scrollWrap.value;
+  if (!el) return;
+  e.preventDefault();
+  updateMax();
+  const delta = e.deltaY;
+  targetScroll = Math.max(0, Math.min(maxScroll, el.scrollTop + delta));
+  gsap.to(el, {
+    scrollTop: targetScroll,
+    duration: 0.6,
+    ease: "power3.out",
+    overwrite: true,
+  });
+}
+
+onMounted(() => {
+  const el = scrollWrap.value;
+  if (!el) return;
+  nextTick(() => updateMax());
+  el.addEventListener("wheel", onWheel, { passive: false });
+  window.addEventListener("resize", updateMax);
+});
+
+onUnmounted(() => {
+  const el = scrollWrap.value;
+  if (el) el.removeEventListener("wheel", onWheel);
+  window.removeEventListener("resize", updateMax);
+});
+
+function displayOnScreen(type: string, piece: any) {
+  console.log("Clicked piece:", type, piece);
+  if (type === "dress") selectedDress.value = piece;
+  if (type === "shoe") selectedShoe.value = piece;
+  if (type === "accessories") selectedAccessories.value = piece;
+}
 </script>
 
 <style>
@@ -143,8 +242,8 @@ html {
   animation:
     fadeIn 1s ease both,
     float 4s ease-in-out 1s infinite;
-    margin-left: 1290px;
-    padding-top: 150px;
+  margin-left: 1290px;
+  padding-top: 150px;
 }
 .category-tabs {
   display: flex;
@@ -190,6 +289,9 @@ html {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition:
+    transform 0.3s ease,
+    background 0.3s;
 }
 
 .piece-card img {
@@ -214,13 +316,25 @@ html {
   border-radius: 8px;
 }
 
+.pieces-scroll-wrapper {
+  flex: 1;
+  position: relative;
+  overflow-y: auto; /* allow native scrolling; we'll smooth via GSAP */
+  -webkit-overflow-scrolling: touch;
+}
+.pieces-scroll-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
 .pieces-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
-  overflow-y: auto;
+  /* let ScrollSmoother handle scrolling; remove native overflow */
   flex: 1;
   align-content: flex-start;
+  position: relative;
+  will-change: transform;
 }
 .pieces-grid::-webkit-scrollbar {
   display: none;
@@ -242,5 +356,10 @@ body {
 .piece-card:hover {
   transform: scale(1.05);
   cursor: pointer;
+  background: rgba(255, 255, 255, 0.1);
+}
+.finishButton {
+  width: 500px;
+  height: 500px;
 }
 </style>
