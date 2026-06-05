@@ -15,7 +15,10 @@
 </template>
 
 <script setup lang="ts">
+import { isAuthApiError } from '@supabase/supabase-js';
 import { reactive, ref } from 'vue';
+import { supabase } from '#imports';
+import { sign } from 'node:crypto';
 
 const form = reactive({
     username: '',
@@ -33,40 +36,66 @@ async function handleSubmit() {
     success.value = false;
 
     try {
-        // 1. Create auth user with Supabase Auth
-        const { data: authData, error: authError } = await supabase.auth.signUp({
+
+        const {data: signInData, error: signInError} = await supabase.auth.signInWithPassword({
             email: form.email,
             password: form.password,
         });
 
-        if (authError) throw authError;
+        if(!signInError) {
+            success.value = true; 
+            clearForm();
+            return;
+        }
 
-        // 2. Insert user info into your 'users' table
+        const isUserNotFound = signInError.message.toLowerCase().includes('invalid login credentials') || 
+                               signInError.status === 400;
+
+
+        if(isUserNotFound){
+            if(!form.username.trim()){
+                throw new Error('Username is required for new users');
+            }
+
+            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+                email: form.email,
+                password: form.password,
+            });
+
+            if (signUpError) throw signUpError;
+        
+
         const { error: insertError } = await supabase
             .from('users')
             .insert([
                 {
-                    id: authData.user?.id, // Use auth user ID
+                    id: signUpData.user?.id, 
                     username: form.username,
                     email: form.email,
-                    created_at: new Date(),
+                    password: form.password,
+                    date_joined: new Date(),
                 }
             ]);
 
         if (insertError) throw insertError;
 
         success.value = true;
-        form.username = '';
-        form.email = '';
-        form.password = '';
-        
-        console.log('User signed up successfully:', authData.user);
+        clearForm();
+        } else {
+            throw signInError;
+        }
     } catch (err) {
-        error.value = err instanceof Error ? err.message : 'An error occurred';
+        error.value = isAuthApiError(err) ? err.message : 'An error occurred';
         console.error('Sign up error:', err);
     } finally {
         loading.value = false;
     }
+}
+
+function clearForm() {
+    form.username = '';
+    form.email = '';
+    form.password = '';
 }
 </script>
 
