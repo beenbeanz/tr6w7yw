@@ -160,7 +160,6 @@ const activePieces = computed(() => {
   return [];
 });
 
-// smooth scrolling for the inner pieces area
 const scrollWrap = ref<HTMLElement | null>(null);
 let targetScroll = 0;
 let maxScroll = 0;
