@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="theme-island" role="toolbar" aria-label="Select background theme">
-      <div class="theme-list">
+      <div class="theme-list" ref="themeListRef">
         <button
           v-for="t in themes"
           :key="t"
@@ -11,6 +11,7 @@
         >
           <img :src="`/bg${t}.png`" :alt="`Theme ${t}`" @error="(e)=>{ (e.target as HTMLImageElement).src = `/bg${t}.jpg`; }" />
         </button>
+        <div class="selector" :style="selectorStyle"></div>
       </div>
     </div>
 
@@ -45,7 +46,7 @@
 
 <script setup lang="ts">
 import { useOutfitStore } from "~/stores/outfit";
-import { ref, onMounted, onUnmounted, watch } from "vue";
+import { ref, onMounted, onUnmounted, watch, nextTick } from "vue";
 
 const outfitStore = useOutfitStore();
 const capturing = ref(false);
@@ -53,6 +54,8 @@ const capturing = ref(false);
 // Theme list indices (public/bg0..bg10 with mixed png/jpg)
 const themes = Array.from({ length: 11 }, (_, i) => i);
 const selectedTheme = ref(0);
+const themeListRef = ref<HTMLElement | null>(null);
+const selectorStyle = ref<Record<string, string>>({ transform: 'translateX(0px)', width: '0px', height: '0px' });
 let prevBodyBg = '';
 let prevBodyBgColor = '';
 
@@ -73,6 +76,8 @@ function applyBodyBackground(index: number) {
 
 function selectTheme(i: number) {
   selectedTheme.value = i;
+  // update selector position after DOM updates
+  nextTick(() => updateSelector());
 }
 
 onMounted(() => {
@@ -80,15 +85,48 @@ onMounted(() => {
   prevBodyBg = document.body.style.backgroundImage || '';
   prevBodyBgColor = document.body.style.backgroundColor || '';
   applyBodyBackground(selectedTheme.value);
+  // position selector after mount
+  updateSelector();
+  window.addEventListener('resize', updateSelector);
+  // also update when theme thumbnail images load
+  nextTick(() => {
+    const imgs = themeListRef.value?.querySelectorAll('img') ?? [];
+    imgs.forEach((img) => img.addEventListener('load', updateSelector));
+  });
 });
 
 onUnmounted(() => {
   // restore
   document.body.style.backgroundImage = prevBodyBg;
   document.body.style.backgroundColor = prevBodyBgColor;
+  window.removeEventListener('resize', updateSelector);
+  const imgs = themeListRef.value?.querySelectorAll('img') ?? [];
+  imgs.forEach((img) => img.removeEventListener('load', updateSelector));
 });
 
-watch(selectedTheme, (v) => applyBodyBackground(v));
+watch(selectedTheme, (v) => {
+  applyBodyBackground(v);
+  // reposition selector when theme changes
+  nextTick(() => updateSelector());
+});
+
+async function updateSelector() {
+  await nextTick();
+  const container = themeListRef.value;
+  if (!container) return;
+  const buttons = container.querySelectorAll('.theme-thumb');
+  const idx = selectedTheme.value;
+  const el = buttons[idx] as HTMLElement | undefined;
+  if (!el) return;
+  const containerRect = container.getBoundingClientRect();
+  const elRect = el.getBoundingClientRect();
+  const left = elRect.left - containerRect.left;
+  selectorStyle.value = {
+    width: `${elRect.width}px`,
+    height: `${elRect.height}px`,
+    transform: `translateX(${left}px)`,
+  };
+}
 
 async function capturePageAsBlob(): Promise<Blob> {
   const html2canvas = (await import('html2canvas')).default;
@@ -96,8 +134,11 @@ async function capturePageAsBlob(): Promise<Blob> {
   const width = Math.max(docEl.scrollWidth, docEl.clientWidth);
   const height = Math.max(docEl.scrollHeight, docEl.clientHeight);
   const scale = Math.min(2, window.devicePixelRatio || 1);
-
-  const canvas = await html2canvas(document.body, {
+  // hide UI chrome (theme island, controls) from the capture
+  document.body.setAttribute('data-capture-hide', 'true');
+  let canvas: HTMLCanvasElement;
+  try {
+    canvas = await html2canvas(document.body, {
     width,
     height,
     windowWidth: width,
@@ -107,7 +148,11 @@ async function capturePageAsBlob(): Promise<Blob> {
     scale,
     useCORS: true,
     allowTaint: false,
-  });
+    });
+  } finally {
+    // ensure UI is restored even if html2canvas throws
+    document.body.removeAttribute('data-capture-hide');
+  }
 
   return await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob((b: Blob | null) => {
@@ -245,8 +290,28 @@ body {
   backdrop-filter: blur(6px);
 }
 .theme-list { display:flex; gap:8px; align-items:center; }
-.theme-thumb { border: 2px solid transparent; padding: 2px; background: transparent; border-radius:6px; }
+.theme-list { display:flex; gap:8px; align-items:center; position:relative; }
+.theme-thumb { border: 2px solid transparent; padding: 2px; background: transparent; border-radius:6px; position:relative; z-index:2; }
 .theme-thumb img { width:48px; height:32px; object-fit:cover; display:block; border-radius:4px; }
-.theme-thumb.selected { border-color: #c8953a; box-shadow: 0 4px 10px rgba(0,0,0,0.12); }
+.theme-thumb.selected { /* keep small accent in addition to moving selector */ box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
+
+/* moving golden border selector */
+.selector {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  z-index: 1;
+  border: 3px solid #c8953a;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(200,150,60,0.18);
+  transition: transform 360ms cubic-bezier(.2,.9,.2,1), width 360ms cubic-bezier(.2,.9,.2,1), height 360ms cubic-bezier(.2,.9,.2,1);
+  pointer-events: none;
+}
+
+/* hide UI during capture */
+body[data-capture-hide="true"] .theme-island,
+body[data-capture-hide="true"] .controls {
+  display: none !important;
+}
 
 </style>
