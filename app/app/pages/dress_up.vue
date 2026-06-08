@@ -89,13 +89,28 @@
       "
     />
   </div>
-  <button class="finishButton">THURSDAY: FIND THE BUTTON WHERE IS THE BUTTON</button>
+  <div>
+      <a class="button" @click.prevent="handleNavigate">Finish & Share</a>
+    </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick } from "vue";
 import gsap from "gsap";
 import { supabase } from "~/utils/supabase";
+import { useRouter } from "vue-router";
+import { useOutfitStore } from "~/stores/outfit";
+
+const outfitStore = useOutfitStore();
+
+const router = useRouter();
+const isLeaving = ref(false);
+
+async function handleNavigate() {
+  isLeaving.value = true;
+  await new Promise((resolve) => setTimeout(resolve, 1200));
+  router.push("/share");
+}
 
 const activeCategory = ref("dress");
 const tabs = [
@@ -187,14 +202,36 @@ onUnmounted(() => {
 });
 
 function displayOnScreen(type: string, piece: any) {
-  console.log("Clicked piece:", type, piece);
-  if (type === "dress") selectedDress.value = piece;
-  if (type === "shoe") selectedShoe.value = piece;
-  if (type === "accessories") selectedAccessories.value = piece;
+  if (type === "dress") {
+    selectedDress.value = piece;
+    outfitStore.dress = piece;
+  }
+
+  if (type === "shoe") {
+    selectedShoe.value = piece;
+    outfitStore.shoe = piece;
+  }
+
+  if (type === "accessories") {
+    selectedAccessories.value = piece;
+    outfitStore.accessory = piece;
+  }
 }
 </script>
 
 <style>
+.button {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  background: #c8953a;
+  color: white;
+  padding: 16px 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 9999;
+  display: inline-block;
+}
 .dress-overlay,
 .shoe-overlay,
 .accessories-overlay {
