@@ -43,7 +43,7 @@ function signUp() {
 <style>
 :root {
   --coral: rgba(107, 30, 78, 0.8);
-  --navy2: #1a2d42;
+  --navy2: #415044;
   --navy3: #243650;
   --cream: #f9f6ef;
   --cream2: #f0ebe0;
@@ -187,16 +187,16 @@ body {
     0 0 20px rgba(117, 23, 86, 0.5);
 }
 
-.button-link {
+.button-link, .signUpBtn {
   font-family: var(--sans);
   font-size: 1rem;
   font-weight: 500;
-  color: var(--coral);
+  color: var(--navy2);
   backdrop-filter: blur(6px);
   border-radius: 8px;
   padding: 0.75rem 2rem;
   text-decoration: none;
-  display: block;
+  display: flex;
   width: fit-content;
   margin: 2rem auto 0;
   animation:
@@ -208,13 +208,13 @@ body {
     transform 0.15s;
 }
 
-.button-link:hover {
+.button-link:hover, .signUpBtn:hover {
   background-color: var(--coral);
   color: var(--gold);
   transform: scale(1.05);
 }
 
-.button-link:active {
+.button-link:active, .signUpBtn:hover {
   transform: scale(0.97);
 }
 </style>

@@ -19,5 +19,6 @@
     "tailwindcss": "^4.3.0",
     "vue": "^3.5.33",
     "vue-router": "^5.0.6"
+    ,"html2canvas": "^1.4.1"
   }
 }
