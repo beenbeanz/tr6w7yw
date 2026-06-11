@@ -1,21 +1,34 @@
 <template>
-    <div class="page">
-        <h1 class="title">Sign Up</h1>
-        <form @submit.prevent="handleSubmit" class="signUpForm">
-            <input v-model="form.username" type="text" placeholder="Username" required>
-            <input v-model="form.email" type="email" placeholder="Email Address" required>
-            <input v-model="form.password" type="text" placeholder="Password" required>
-            <button type="submit" class="signUpBtn" :disabled="loading">
-                {{ loading ? 'Signing Up...' : 'Sign Up' }}
-            </button>
-            <p v-if="error" class="error">{{ error }}</p>
-            <p v-if="success" class="success">Sign up successful!</p>
-        </form>
-    </div>
+  <div>
+    <h2>{{ isSigningUp ? 'Sign Up' : 'Sign In' }}</h2>
+
+    <form @submit.prevent="isSigningUp ? handleSignUp() : handleSignIn()">
+        <input v-if="isSigningUp" v-model="form.username" type="text" placeholder="Username" required/>
+        <input v-model="form.email" type="email" placeholder="Email" required/>
+        <input v-model="form.password" type="password" placeholder="Password (min 6 characters)" required>
+
+        <p v-if="error" style="color: red;">{{ error }}</p>
+        <p v-if="success" style="color: green;">{{ isSigningUp ? 'Account created!' : 'Signed in!' }}</p>
+
+        <button type="submit" :disabled="loading">
+            {{ loading ? 'Loading...' : (isSigningUp ? 'Sign Up' : 'Sign In') }}
+        </button>
+    </form>
+
+    <p>
+      {{ isSigningUp ? 'Already have an account?' : "Don't have an account?" }}
+      <button type="button" @click="toggleMode" style="background: none; border: none; color: blue; cursor: pointer;">
+        {{ isSigningUp ? 'Sign In' : 'Sign Up' }}
+      </button>
+    </p>
+  </div>
 </template>
 
+
 <script setup lang="ts">
+import { isAuthApiError } from '@supabase/supabase-js';
 import { reactive, ref } from 'vue';
+import { supabase } from '#imports';
 
 const form = reactive({
     username: '',
@@ -26,47 +39,94 @@ const form = reactive({
 const loading = ref(false);
 const error = ref('');
 const success = ref(false);
+const isSigningUp = ref(false);  
 
-async function handleSubmit() {
+async function handleSignUp() {
     loading.value = true;
     error.value = '';
     success.value = false;
 
     try {
-        // 1. Create auth user with Supabase Auth
-        const { data: authData, error: authError } = await supabase.auth.signUp({
+        if (!form.username.trim()) {
+            throw new Error('Username is required');
+        }
+
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
             email: form.email,
             password: form.password,
         });
 
-        if (authError) throw authError;
+        if (signUpError) {
+            console.error('Sign up error:', signUpError);
+            throw signUpError;
+        }
 
-        // 2. Insert user info into your 'users' table
+        if (!signUpData.user) {
+            throw new Error('Sign up failed: no user returned');
+        }
+
         const { error: insertError } = await supabase
             .from('users')
-            .insert([
-                {
-                    id: authData.user?.id, // Use auth user ID
-                    username: form.username,
-                    email: form.email,
-                    created_at: new Date(),
-                }
-            ]);
+            .insert({
+                id: signUpData.user!.id,
+                username: form.username,
+                email: form.email,
+            });
 
-        if (insertError) throw insertError;
+        if (insertError) {
+            console.error('Insert error:', insertError);
+            throw insertError;
+        }
 
         success.value = true;
-        form.username = '';
-        form.email = '';
-        form.password = '';
-        
-        console.log('User signed up successfully:', authData.user);
+        error.value = '';
+        clearForm();
+
     } catch (err) {
-        error.value = err instanceof Error ? err.message : 'An error occurred';
-        console.error('Sign up error:', err);
+        error.value = isAuthApiError(err) ? err.message : (err as Error).message;
+        console.error(err);
     } finally {
         loading.value = false;
     }
+}
+
+async function handleSignIn() {
+    loading.value = true;
+    error.value = '';
+    success.value = false;
+
+    try {
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+            email: form.email,
+            password: form.password,
+        });
+
+        if (signInError) {
+            console.error('Sign in error:', signInError);
+            throw signInError;
+        }
+
+        success.value = true;
+        error.value = '';
+        clearForm();
+
+    } catch (err) {
+        error.value = isAuthApiError(err) ? err.message : (err as Error).message;
+        console.error(err);
+    } finally {
+        loading.value = false;
+    }
+}
+
+function clearForm() {
+    form.username = '';
+    form.email = '';
+    form.password = '';
+}
+
+function toggleMode() {
+    isSigningUp.value = !isSigningUp.value;
+    error.value = '';
 }
 </script>
 
