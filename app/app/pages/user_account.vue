@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '#imports'
 import { useUserOutfits } from '@/composables/useUserOutfits'
 
 const authStore = useAuthStore()
@@ -15,8 +15,8 @@ onMounted(() => {
   <div class="profile-page">
     <!-- User Info Section -->
     <div class="user-info">
-      <h1>{{ authStore.userEmail }}</h1>
-      <button @click="authStore.logout">Logout</button>
+      <h1>{{ authStore.user?.email ?? 'Guest' }}</h1>
+      <button @click="authStore.logout()">Logout</button>
     </div>
 
     <!-- Outfits Section -->
@@ -47,10 +47,10 @@ onMounted(() => {
           </div>
 
           <!-- Accessories -->
-          <div v-if="outfit.pieces.accessories.length" class="piece accessories-piece">
+          <div v-if="(outfit.pieces.accessories ?? []).length" class="piece accessories-piece">
             <strong>✨ Accessories:</strong>
             <ul>
-              <li v-for="acc in outfit.pieces.accessories" :key="acc.id">
+              <li v-for="acc in (outfit.pieces.accessories ?? [])" :key="acc.id">
                 {{ acc.piece_id }}
               </li>
             </ul>

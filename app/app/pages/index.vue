@@ -12,6 +12,7 @@
   <div class="page" :class="{ 'fade-out': isLeaving }">
     <div class="bg-overlay" :class="{ 'bg-transition': isLeaving }"></div>
     <div class="content">
+      <nav_bar></nav_bar>
       <div class="logo-container">
         <img src="/logo.png" alt="triple t logo" class="logo" />
       </div>
@@ -25,6 +26,7 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import nav_bar from "~/components/nav_bar.vue";
 
 const router = useRouter();
 const isLeaving = ref(false);
