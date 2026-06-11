@@ -219,6 +219,7 @@ function displayOnScreen(type: string, piece: any) {
 </script>
 
 <style>
+
 .button {
   position: fixed;
   bottom: 40px;
