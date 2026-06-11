@@ -1,0 +1,55 @@
+import { ref } from 'vue'
+import { supabase } from '#imports'
+
+interface OutfitPiece {
+  piece_type: 'dress' | 'shoe' | 'accessory'
+  piece_id: string
+}
+
+export const useOutfits = () => {
+  const loading = ref(false)
+  const error = ref<string | null>(null)
+
+  const saveOutfit = async (outfitName: string, pieces: OutfitPiece[]) => {
+    loading.value = true
+    error.value = null
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
+      const { data: outfitData, error: outfitError } = await supabase
+        .from('user_outfits')
+        .insert({
+          user_id: user.id,
+          outfit_name: outfitName
+        })
+        .select()
+        .single()
+
+      if (outfitError) throw outfitError
+
+      const piecesToInsert = pieces.map(piece => ({
+        outfit_id: outfitData.id,
+        piece_type: piece.piece_type,
+        piece_id: piece.piece_id
+      }))
+
+      const { error: piecesError } = await supabase
+        .from('outfit_pieces')
+        .insert(piecesToInsert)
+
+      if (piecesError) throw piecesError
+
+      return outfitData
+
+    } catch (err: any) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  return { saveOutfit, loading, error }
+}

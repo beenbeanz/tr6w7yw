@@ -17,6 +17,7 @@
       </div>
       <h1 class="title">Magical Dress Up Game</h1>
       <a class="button-link" @click.prevent="handleNavigate">Play Now</a>
+      <button class="signUpBtn" @click="signUp()">Sign Up</button>
     </div>
   </div>
 </template>
@@ -32,6 +33,10 @@ async function handleNavigate() {
   isLeaving.value = true;
   await new Promise((resolve) => setTimeout(resolve, 1200));
   router.push("/dress_up");
+}
+
+function signUp() {
+  router.push("/sign_up");
 }
 </script>
 
