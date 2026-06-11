@@ -1,7 +1,7 @@
 <template>
   <nav>
     <div>Logo</div>
-    <div v-if="authStore.isLoggedIn">
+    <div>
       <button @click="goToProfile">👤 Profile</button>
     </div>
   </nav>
@@ -14,7 +14,7 @@ import { useAuthStore } from '#imports'
 const router = useRouter()
 const authStore = useAuthStore()
 
-const goToProfile = () => {
-  router.push('/profile')
+function goToProfile() {
+  router.push('/user_account')
 }
 </script>
