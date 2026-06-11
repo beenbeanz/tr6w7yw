@@ -3,8 +3,12 @@
     "@supabase/supabase-js": "^2.106.1",
     "@tailwindcss/vite": "^4.3.0",
     "tailwindcss": "^4.3.0"
+    "gsap": "^3.15.0",
+    "ws": "^8.21.0"
   },
   "devDependencies": {
-    "@types/node": "^25.9.1"
+    "@types/gsap": "^1.20.2",
+    "@types/node": "^25.9.1",
+    "@types/ws": "^8.18.1"
   }
 }
