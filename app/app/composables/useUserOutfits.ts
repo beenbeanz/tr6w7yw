@@ -2,8 +2,8 @@ import { ref, onMounted } from 'vue'
 import { supabase } from '#imports'
 
 interface PieceDetail {
-  id: string
-  name?: string
+  id: number
+  display_name?: string
   image_path: string
 }
 
@@ -12,9 +12,21 @@ interface Outfit {
   outfit_name: string
   created_at: string
   pieces: {
-    dress?: PieceDetail
-    shoes?: PieceDetail
-    accessory?: PieceDetail
+    dress?: {
+      id: string
+      name?: string
+      image_path: string
+    }
+    shoes?: {
+      id: string
+      name?: string
+      image_path: string
+    }
+    accessory?: {
+      id: string
+      name?: string
+      image_path: string
+    }
   }
 }
 
@@ -59,7 +71,14 @@ export const useUserOutfits = () => {
               .select('id, display_name, image_path')
               .eq('id', dressOp.piece_id)
               .single()
-            pieces.dress = dressData
+            if (dressData) {
+              pieces.dress = {
+                ...dressData,
+                image_path: supabase.storage
+                  .from('dress_pieces')
+                  .getPublicUrl(dressData.image_path).data.publicUrl
+              }
+            }
           }
 
           // Fetch shoe details
@@ -70,7 +89,14 @@ export const useUserOutfits = () => {
               .select('id, display_name, image_path')
               .eq('id', shoeOp.piece_id)
               .single()
-            pieces.shoes = shoeData
+            if (shoeData) {
+              pieces.shoes = {
+                ...shoeData,
+                image_path: supabase.storage
+                  .from('shoe-pieces')
+                  .getPublicUrl(shoeData.image_path).data.publicUrl
+              }
+            }
           }
 
           // Fetch accessory details
@@ -81,7 +107,14 @@ export const useUserOutfits = () => {
               .select('id, display_name, image_path')
               .eq('id', accessoryOp.piece_id)
               .single()
-            pieces.accessory = accessoryData
+            if (accessoryData) {
+              pieces.accessory = {
+                ...accessoryData,
+                image_path: supabase.storage
+                  .from('acessories-pieces')
+                  .getPublicUrl(accessoryData.image_path).data.publicUrl
+              }
+            }
           }
 
           return {
