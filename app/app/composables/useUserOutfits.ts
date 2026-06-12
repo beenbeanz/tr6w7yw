@@ -26,7 +26,7 @@ export const useUserOutfits = () => {
       if (!user) throw new Error('Not authenticated')
 
       const { data, error: fetchError } = await supabase
-        .from('outfits')
+        .from('user_outfits')  
         .select(`
           id,
           outfit_name,
@@ -61,7 +61,7 @@ export const useUserOutfits = () => {
 
   const deleteOutfit = async (outfitId: string) => {
     const { error: deleteError } = await supabase
-      .from('outfits')
+      .from('user_outfits') 
       .delete()
       .eq('id', outfitId)
 

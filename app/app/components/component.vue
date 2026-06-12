@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useOutfits } from '~/composables/userOutfits'
+import { useOutfits } from '~/composables/useOutfits'
 
 const { saveOutfit, loading } = useOutfits()
 

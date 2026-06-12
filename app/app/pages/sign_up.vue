@@ -136,7 +136,6 @@ async function handleSignIn() {
 
     success.value = true;
 
-    // Redirect to profile page
     await router.push("/user_account");
 
     clearForm();
