@@ -17,7 +17,7 @@
       </div>
       <h1 class="title">Magical Dress Up Game</h1>
       <a class="button-link" @click.prevent="handleNavigate">Play Now</a>
-      <button class="signUpBtn" @click="signUp()">Sign Up</button>
+      <button class="signUpBtn" @click="signUp()">Sign In</button>
     </div>
   </div>
 </template>
