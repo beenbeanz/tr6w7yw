@@ -15,3 +15,10 @@ function goToProfile() {
   router.push('/user_account')
 }
 </script>
+
+<style>
+nav{
+  position: relative;
+  z-index: 100;
+}
+</style>

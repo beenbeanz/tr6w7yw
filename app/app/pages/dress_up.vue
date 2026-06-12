@@ -67,7 +67,7 @@
         position: absolute;
         top: 70%;
         left: 70%;
-        transform: translate(-50%, -50%);
+        transform: translate(-45%, -7%);
         width: 677px;
         height: auto;
         z-index: 1;
@@ -80,10 +80,10 @@
       class="accessoriesOverlay"
       style="
         position: absolute;
-        top: 70%;
+        top: 30%;
         left: 70%;
-        transform: translate(-50%, -50%);
-        width: 677px;
+        transform: translate(-120%, -50%);
+        width: 200px;
         height: auto;
         z-index: 3;
       "
