@@ -20,21 +20,17 @@
 
           <div v-if="outfit.pieces.dress" class="piece dress-piece">
             <strong>👗 Dress:</strong>
-            <p>{{ outfit.pieces.dress.piece_id }}</p>
+            <p>{{ outfit.pieces.dress.id }}</p>
           </div>
 
           <div v-if="outfit.pieces.shoes" class="piece shoe-piece">
             <strong>👠 Shoes:</strong>
-            <p>{{ outfit.pieces.shoes.piece_id }}</p>
+            <p>{{ outfit.pieces.shoes.id }}</p>
           </div>
 
-          <div v-if="(outfit.pieces.accessories ?? []).length" class="piece accessories-piece">
-            <strong>✨ Accessories:</strong>
-            <ul>
-              <li v-for="acc in (outfit.pieces.accessories ?? [])" :key="acc.piece_id">
-                {{ acc.piece_id }}
-              </li>
-            </ul>
+           <div v-if="outfit.pieces.accessory" class="piece shoe-piece">
+            <strong>👠 Shoes:</strong>
+            <p>{{ outfit.pieces.accessory.id }}</p>
           </div>
 
           <p class="created-date">
@@ -59,21 +55,20 @@
         <div class="detail-content">
           <div v-if="selectedOutfit.pieces.dress" class="detail-piece">
             <strong>👗 Dress</strong>
-            <p>ID: {{ selectedOutfit.pieces.dress.piece_id }}</p>
+            <img v-if="selectedOutfit.pieces.dress.image_path" :src="selectedOutfit.pieces.dress.image_path" :alt="selectedOutfit.pieces.dress.name" class="piece-image" />
+            <p>{{ selectedOutfit.pieces.dress.name || selectedOutfit.pieces.dress.id }}</p>
           </div>
 
           <div v-if="selectedOutfit.pieces.shoes" class="detail-piece">
             <strong>👠 Shoes</strong>
-            <p>ID: {{ selectedOutfit.pieces.shoes.piece_id }}</p>
+            <img v-if="selectedOutfit.pieces.shoes.image_path" :src="selectedOutfit.pieces.shoes.image_path" :alt="selectedOutfit.pieces.shoes.name" class="piece-image" />
+            <p>{{ selectedOutfit.pieces.shoes.name || selectedOutfit.pieces.shoes.id }}</p>
           </div>
 
-          <div v-if="(selectedOutfit.pieces.accessories ?? []).length" class="detail-piece">
-            <strong>✨ Accessories</strong>
-            <ul>
-              <li v-for="acc in selectedOutfit.pieces.accessories" :key="acc.piece_id">
-                {{ acc.piece_id }}
-              </li>
-            </ul>
+          <div v-if="selectedOutfit.pieces.accessory" class="detail-piece">
+            <strong>✨ Accessory</strong>
+            <img v-if="selectedOutfit.pieces.accessory.image_path" :src="selectedOutfit.pieces.accessory.image_path" :alt="selectedOutfit.pieces.accessory.name" class="piece-image" />
+            <p>{{ selectedOutfit.pieces.accessory.name || selectedOutfit.pieces.accessory.id }}</p>
           </div>
 
           <p class="detail-date">
@@ -97,17 +92,20 @@ interface Outfit {
   created_at: string
   pieces: {
     dress?: {
-      piece_type: string
-      piece_id: string
+      id: string
+      name?: string
+      image_path: string
     }
     shoes?: {
-      piece_type: string
-      piece_id: string
+      id: string
+      name?: string
+      image_path: string
     }
-    accessories?: Array<{
-      piece_type: string
-      piece_id: string
-    }>
+    accessory?: {
+      id: string
+      name?: string
+      image_path: string
+    }
   }
 }
 
@@ -283,5 +281,12 @@ onMounted(() => {
 .delete-btn:hover {
   background: #c0392b;
   box-shadow: 0 4px 12px rgba(231, 76, 60, 0.25);
+}
+.piece-image {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin: 0.5rem 0;
 }
 </style>
