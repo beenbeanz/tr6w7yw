@@ -9,20 +9,30 @@ interface OutfitPiece {
 export const useOutfits = () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
+  const success = ref(false)
 
   const saveOutfit = async (outfitName: string, pieces: OutfitPiece[]) => {
     loading.value = true
     error.value = null
+    success.value = false
 
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
 
+      if (!pieces.length) {
+        throw new Error('Please add at least one piece to your outfit')
+      }
+
+      if (!outfitName.trim()) {
+        throw new Error('Please give your outfit a name')
+      }
+
       const { data: outfitData, error: outfitError } = await supabase
         .from('user_outfits')
         .insert({
           user_id: user.id,
-          outfit_name: outfitName
+          outfit_name: outfitName.trim()
         })
         .select()
         .single()
@@ -41,6 +51,7 @@ export const useOutfits = () => {
 
       if (piecesError) throw piecesError
 
+      success.value = true
       return outfitData
 
     } catch (err: any) {
@@ -51,5 +62,10 @@ export const useOutfits = () => {
     }
   }
 
-  return { saveOutfit, loading, error }
+  const clearMessages = () => {
+    error.value = null
+    success.value = false
+  }
+
+  return { saveOutfit, loading, error, success, clearMessages }
 }
