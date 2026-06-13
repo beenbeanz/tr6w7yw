@@ -70,8 +70,11 @@ function signUp() {
   position: relative;
   width: 100%;
   min-height: 100vh;
+  pointer-events: none;
 }
-
+.page * {
+  pointer-events: auto;
+}
 .bg-overlay {
   position: fixed;
   inset: 0;

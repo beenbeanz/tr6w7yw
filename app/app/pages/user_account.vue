@@ -10,6 +10,7 @@
 
     <div class="outfits-section">
       <h2>My Outfits</h2>
+      <button @click="goToDressUp">+</button>
 
       <p v-if="loading">Loading outfits...</p>
 
@@ -17,6 +18,7 @@
         No outfits yet. Create one!
       </p>
 
+   
       <div v-else class="outfits-grid">
         <div v-for="outfit in outfits" :key="outfit.id" class="outfit-card">
           <h3>{{ outfit.outfit_name }}</h3>
@@ -122,6 +124,7 @@ interface Outfit {
 
 const authStore = useAuthStore()
 const { outfits, loading, deleteOutfit } = useUserOutfits()
+const router = useRouter();
 
 const selectedOutfit = ref<Outfit | null>(null)
 const showOutfitDetail = ref(false)
@@ -136,8 +139,12 @@ const closeOutfitDetail = (): void => {
   selectedOutfit.value = null
 }
 
-onMounted(() => {
-  // Fetch outfits when page loads
+function goToDressUp(){
+  router.push('/dress_up')
+}
+
+onMounted(async () => {
+  await authStore.fetchUser()
 })
 </script>
 
