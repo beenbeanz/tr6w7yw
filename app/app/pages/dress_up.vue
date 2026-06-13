@@ -41,6 +41,7 @@
         width: 633px;
         height: auto;
         z-index: 1;
+        
       "
     />
     <img
@@ -219,7 +220,28 @@ function displayOnScreen(type: string, piece: any) {
 </script>
 
 <style>
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.logo-container {
+  animation: fadeUp 0.8s ease both;
+}
 
+.box {
+  animation: fadeUp 0.8s ease 0.2s both;
+}
+
+
+.button {
+  animation: fadeUp 0.8s ease 0.6s both;
+}
 .button {
   position: fixed;
   bottom: 40px;

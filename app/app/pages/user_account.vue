@@ -1,8 +1,11 @@
 <template>
   <div class="profile-page">
+    <div class="profile-shell">
     <div class="user-info">
       <h1>{{ authStore.user?.email ?? 'Guest' }}</h1>
-      <button class="logout-btn" @click="authStore.logout()">Logout</button>
+      <button class="logout-btn" @click="handleLogout">
+  Logout
+</button>
     </div>
 
     <div class="outfits-section">
@@ -48,7 +51,7 @@
         </div>
       </div>
     </div>
-
+ </div>
     <div v-if="showOutfitDetail && selectedOutfit" class="detail-overlay" @click="closeOutfitDetail">
       <div class="detail-modal" @click.stop>
         <button class="close-btn" @click="closeOutfitDetail">✕</button>
@@ -87,7 +90,14 @@
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '#imports'
 import { useUserOutfits } from '@/composables/useUserOutfits'
-import { useRouter } from 'vue-router'
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+async function handleLogout() {
+  await authStore.logout();
+  router.push("/");
+}
 
 interface Outfit {
   id: string
@@ -138,163 +148,365 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
+<style>
 .profile-page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  padding: 3rem;
 }
 
+.profile-shell {
+  position: relative;
+  overflow: hidden;
+
+  width: 100%;
+  max-width: 1200px;
+
+  background: rgba(255, 255, 255, 0.04);
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  border: 1px solid rgba(240, 201, 122, 0.15);
+  border-radius: 32px;
+
+  padding: 2rem;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.12),
+    0 0 12px rgba(240, 201, 122, 0.08);
+}
+
+.profile-shell::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,0.12),
+      transparent 20%
+    );
+
+  pointer-events: none;
+}
+
+/* ---------- USER HEADER ---------- */
+
 .user-info {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+
+  border-bottom: 1px solid rgba(240, 201, 122, 0.2);
+  border-radius: 0;
+}
+
+.outfit-card {
+  background: rgba(255, 255, 255, 0.03);
+
+  backdrop-filter: blur(4px);
+
+  border: 1px solid rgba(240, 201, 122, 0.12);
+
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid #c8953a;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .user-info h1 {
   margin: 0;
-  color: #333;
-  font-size: 1.8rem;
+
+  font-family: var(--candy);
+  font-size: clamp(2rem, 4vw, 3rem);
+
+  color: var(--gold);
+
+  text-shadow:
+    0 2px 6px rgba(107, 30, 78, 0.6),
+    0 0 15px rgba(200, 149, 58, 0.2);
 }
 
-.logout-btn {
-  background: #c8953a;
-  color: white;
+/* ---------- BUTTONS ---------- */
+
+.logout-btn,
+.view-btn,
+.delete-btn {
   border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  border-radius: 10px;
+
+  padding: 0.8rem 1.4rem;
+
   cursor: pointer;
-  font-weight: 500;
-  transition: all 360ms cubic-bezier(0.2, 0.9, 0.2, 1);
-  box-shadow: 0 4px 10px rgba(200, 150, 60, 0.15);
+
+  font-family: var(--sans);
+  font-weight: 600;
+
+  transition: all 0.25s ease;
 }
 
-.logout-btn:hover {
-  background: #d4a850;
-  box-shadow: 0 6px 16px rgba(200, 150, 60, 0.25);
+.logout-btn,
+.view-btn {
+  background: rgba(107, 30, 78, 0.75);
+  color: var(--gold);
+
+  border: 1px solid rgba(240, 201, 122, 0.25);
+}
+
+.logout-btn:hover,
+.view-btn:hover {
+  background: var(--coral);
+  color: var(--gold-light);
+
+  transform: translateY(-2px) scale(1.03);
+
+  box-shadow:
+    0 4px 18px rgba(107, 30, 78, 0.35),
+    0 0 12px rgba(200, 149, 58, 0.25);
+}
+
+.delete-btn {
+  background: rgba(192, 57, 43, 0.8);
+  color: var(--cream);
+}
+
+.delete-btn:hover {
+  background: var(--red);
+
   transform: translateY(-2px);
+
+  box-shadow:
+    0 4px 18px rgba(192, 57, 43, 0.35);
 }
 
-.outfits-section {
-  margin-top: 2rem;
-}
+/* ---------- SECTION ---------- */
 
 .outfits-section h2 {
-  color: #333;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+
+  font-family: var(--candy);
+  font-size: 2.25rem;
+
+  color: var(--gold);
+
+  text-shadow:
+    0 2px 6px rgba(107, 30, 78, 0.5);
 }
+
+.no-outfits {
+  color: rgba(68, 22, 51, 0.5);
+  font-family: var(--sans);
+}
+
+/* ---------- GRID ---------- */
 
 .outfits-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.5rem;
-  margin-top: 1rem;
-}
-
-.outfit-card {
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 1.5rem;
-  background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 360ms cubic-bezier(0.2, 0.9, 0.2, 1);
 }
 
 .outfit-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
+  transform: translateY(-6px);
+
+  box-shadow:
+    0 14px 36px rgba(107, 30, 78, 0.3),
+    0 0 20px rgba(200, 149, 58, 0.12);
 }
 
 .outfit-card h3 {
-  margin: 0 0 1rem 0;
-  font-size: 1.3rem;
-  color: #333;
+  margin-bottom: 1rem;
+
+  font-family: var(--serif);
+  font-size: 1.4rem;
+
+  color: var(--gold-light);
 }
+
+/* ---------- PIECES ---------- */
 
 .piece {
   margin: 0.8rem 0;
-  padding: 0.5rem 0;
-  border-left: 3px solid #c8953a;
-  padding-left: 0.8rem;
+  padding: 0.9rem;
+
+  background: rgba(36, 54, 80, 0.2);
+
+  border-left: 3px solid var(--gold);
+  border-radius: 10px;
 }
 
 .piece strong {
   display: block;
-  margin-bottom: 0.3rem;
-  color: #333;
+  margin-bottom: 0.4rem;
+
+  color: var(--gold-light);
 }
 
 .piece p {
   margin: 0;
-  color: #666;
-  font-size: 0.9rem;
-}
 
-.piece ul {
-  margin: 0.3rem 0 0 1.5rem;
-  padding: 0;
-}
-
-.piece li {
-  list-style: disc;
-  color: #666;
-  font-size: 0.9rem;
+  color: var(--cream);
+  font-size: 0.95rem;
 }
 
 .created-date {
-  font-size: 0.85rem;
-  color: #999;
   margin-top: 1rem;
+
+  color: var(--cream2);
+  opacity: 0.75;
+  font-size: 0.85rem;
 }
+
+/* ---------- ACTIONS ---------- */
 
 .outfit-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
   margin-top: 1rem;
 }
 
 .view-btn,
 .delete-btn {
   flex: 1;
-  padding: 0.6rem 1rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: all 360ms cubic-bezier(0.2, 0.9, 0.2, 1);
 }
 
-.view-btn {
-  background: #c8953a;
-  color: white;
-  box-shadow: 0 2px 6px rgba(200, 150, 60, 0.15);
+/* ---------- MODAL ---------- */
+
+.detail-overlay {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(10px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 2rem;
+  z-index: 999;
 }
 
-.view-btn:hover {
-  background: #d4a850;
-  box-shadow: 0 4px 12px rgba(200, 150, 60, 0.25);
-  transform: translateY(-2px);
+.detail-modal {
+  position: relative;
+
+  width: min(700px, 90vw);
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  background: rgba(107, 30, 78, 0.2);
+
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+
+  border: 1px solid rgba(240, 201, 122, 0.25);
+  border-radius: 24px;
+
+  padding: 2rem;
+
+  box-shadow:
+    0 15px 40px rgba(107, 30, 78, 0.35);
+
+  color: var(--cream);
 }
 
-.delete-btn {
-  background: #e74c3c;
-  color: white;
-  box-shadow: 0 2px 6px rgba(231, 76, 60, 0.15);
+.detail-modal h2 {
+  margin-bottom: 1.5rem;
+
+  font-family: var(--candy);
+  font-size: 2.2rem;
+
+  color: var(--gold);
 }
 
-.delete-btn:hover {
-  background: #c0392b;
-  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.25);
+.detail-content {
+  display: grid;
+  gap: 1rem;
 }
+
+.detail-piece {
+  padding: 1rem;
+
+  background: rgba(36, 54, 80, 0.2);
+
+  border: 1px solid rgba(240, 201, 122, 0.15);
+  border-radius: 12px;
+}
+
+.detail-piece strong {
+  display: block;
+  margin-bottom: 0.75rem;
+
+  color: var(--gold-light);
+}
+
+.detail-piece p {
+  color: var(--cream);
+}
+
+.detail-date {
+  margin-top: 1rem;
+
+  color: var(--cream2);
+  opacity: 0.75;
+}
+
+/* ---------- IMAGES ---------- */
+
 .piece-image {
   width: 100%;
-  max-height: 200px;
+  max-height: 240px;
+
   object-fit: cover;
-  border-radius: 6px;
-  margin: 0.5rem 0;
+
+  margin-bottom: 0.75rem;
+
+  border-radius: 12px;
+
+  border: 1px solid rgba(240, 201, 122, 0.15);
+
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.25);
 }
-</style>
+
+/* ---------- CLOSE BUTTON ---------- */
+
+.close-btn {
+  position: absolute;
+
+  top: 1rem;
+  right: 1rem;
+
+  width: 42px;
+  height: 42px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(107, 30, 78, 0.7);
+
+  color: var(--gold);
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+.close-btn:hover {
+  background: var(--coral);
+
+  transform: rotate(90deg) scale(1.05);
+}</style>
