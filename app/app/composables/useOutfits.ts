@@ -11,6 +11,17 @@ export const useOutfits = () => {
   const error = ref<string | null>(null)
   const success = ref(false)
 
+  const getCurrentCostumeCount = async (userId: string): Promise<number> => {
+    const { data, error } = await supabase
+      .from('users')
+      .select('num_of_costumes')
+      .eq('id', userId)
+      .single()
+
+    if (error) throw error
+    return data?.num_of_costumes ?? 0
+  }
+
   const saveOutfit = async (outfitName: string, pieces: OutfitPiece[]) => {
     loading.value = true
     error.value = null
@@ -50,6 +61,14 @@ export const useOutfits = () => {
         .insert(piecesToInsert)
 
       if (piecesError) throw piecesError
+
+      const currentCount = await getCurrentCostumeCount(user.id)
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ num_of_costumes: currentCount + 1 })
+        .eq('id', user.id)
+      
+      if (updateError) throw updateError
 
       success.value = true
       return outfitData

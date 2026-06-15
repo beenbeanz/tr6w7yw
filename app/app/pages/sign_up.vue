@@ -175,16 +175,12 @@ function toggleMode() {
   width: min(90%, 450px);
   padding: 2.5rem;
   border-radius: 24px;
-
   background: rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(10px);
-
   border: 2px solid rgba(200, 149, 58, 0.35);
-
   box-shadow:
     0 0 30px rgba(143, 51, 94, 0.3),
     0 0 60px rgba(143, 51, 94, 0.15);
-
   animation: fadeUp 0.8s ease;
 }
 
@@ -201,7 +197,6 @@ function toggleMode() {
   text-align: center;
   font-size: 2.5rem;
   margin-bottom: 2rem;
-
   text-shadow:
     0 2px 4px rgba(107, 30, 78, 0.6),
     0 0 15px rgba(143, 51, 94, 0.4);
@@ -216,13 +211,10 @@ form {
 input {
   font-family: var(--sans);
   padding: 0.9rem 1rem;
-
   border-radius: 12px;
   border: 2px solid rgba(200, 149, 58, 0.25);
-
   background: rgba(255, 255, 255, 0.4);
   color: var(--text);
-
   transition: all 0.25s ease;
 }
 
@@ -233,28 +225,21 @@ input::placeholder {
 input:focus {
   outline: none;
   border-color: var(--gold);
-
   box-shadow:
     0 0 12px rgba(200, 149, 58, 0.4);
 }
 
 .submit-btn {
   margin-top: 1rem;
-
   font-family: var(--sans);
   font-weight: 600;
-
   padding: 0.9rem;
   border: none;
   border-radius: 12px;
-
   background: rgba(255, 255, 255, 0.5);
   color: var(--navy2);
-
   cursor: pointer;
-
   transition: all 0.2s ease;
-
   animation: borderGlow 2.5s ease-in-out infinite;
 }
 
@@ -267,7 +252,6 @@ input:focus {
 .switch-text {
   margin-top: 1.5rem;
   text-align: center;
-
   font-family: var(--sans);
   color: var(--navy3);
 }
@@ -275,11 +259,9 @@ input:focus {
 .switch-btn {
   border: none;
   background: none;
-
   color: #8f335e;
   font-weight: 600;
   cursor: pointer;
-
   margin-left: 0.4rem;
 }
 

@@ -49,45 +49,21 @@
       :src="selectedDress.image_path"
       :alt="selectedDress.display_name"
       class="dressOverlay"
-      style="
-        position: absolute;
-        top: 70%;
-        left: 73.5%;
-        transform: translate(-60%, -80%);
-        width: 500px;
-        height: auto;
-        z-index: 2;
-      "
+      :style="getDressStyle()"
     />
     <img
       v-if="selectedShoe"
       :src="selectedShoe.image_path"
       :alt="selectedShoe.display_name"
       class="shoeOverlay"
-      style="
-        position: absolute;
-        top: 70%;
-        left: 70%;
-        transform: translate(-45%, -7%);
-        width: 677px;
-        height: auto;
-        z-index: 1;
-      "
+      :style="getShoeStyle()"
     />
     <img
       v-if="selectedAccessories"
       :src="selectedAccessories.image_path"
       :alt="selectedAccessories.display_name"
       class="accessoriesOverlay"
-      style="
-        position: absolute;
-        top: 30%;
-        left: 70%;
-        transform: translate(-120%, -50%);
-        width: 200px;
-        height: auto;
-        z-index: 3;
-      "
+      :style="getAccessoriesStyle()"
     />
   </div>
   <div>
@@ -97,6 +73,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick } from "vue";
+import type { CSSProperties } from "vue";
 import gsap from "gsap";
 import { supabase } from "~/utils/supabase";
 import { useRouter } from "vue-router";
@@ -164,6 +141,74 @@ const activePieces = computed(() => {
   return [];
 });
 
+function getDressStyle(): CSSProperties {
+  if (!selectedDress.value) return {};
+  const { 
+    width = 615, 
+    height = "auto", 
+    rotation = 0,
+    layer_order = 1,
+    translate_x = -30,
+    translate_y = -50
+  } = selectedDress.value;
+  
+  return {
+    position: "absolute",
+    top: "70%",
+    left: "70%",
+    transform: `translate(${translate_x}%, ${translate_y}%) rotate(${rotation}deg)`,
+    width: `${width}px`,
+    height: height === "auto" ? "auto" : `${height}px`,
+    zIndex: layer_order as unknown as string,
+  } as CSSProperties;
+}
+
+function getShoeStyle(): CSSProperties {
+  if (!selectedShoe.value) return {};
+  const { 
+    width = 677, 
+    height = "auto", 
+    rotation = 0,
+    layer_order = 1,
+    translate_x = -45,
+    translate_y = -7
+  } = selectedShoe.value;
+  
+  return {
+    position: "absolute",
+    top: "70%",
+    left: "70%",
+    transform: `translate(${translate_x}%, ${translate_y}%) rotate(${rotation}deg)`,
+    width: `${width}px`,
+    height: height === "auto" ? "auto" : `${height}px`,
+    zIndex: layer_order as unknown as string,
+  } as CSSProperties;
+}
+
+function getAccessoriesStyle(): CSSProperties {
+  if (!selectedAccessories.value) return {};
+  const { 
+    width = 200, 
+    height = "auto", 
+    rotation = 0,
+    layer_order = 3,
+    translate_x = -120,
+    translate_y = -50
+  } = selectedAccessories.value;
+  
+  return {
+    position: "absolute",
+    top: "30%",
+    left: "70%",
+    transform: `translate(${translate_x}%, ${translate_y}%) rotate(${rotation}deg)`,
+    width: `${width}px`,
+    height: height === "auto" ? "auto" : `${height}px`,
+    zIndex: layer_order as unknown as string,
+  } as CSSProperties;
+}
+
+
+
 const scrollWrap = ref<HTMLElement | null>(null);
 let targetScroll = 0;
 let maxScroll = 0;
@@ -230,6 +275,10 @@ function displayOnScreen(type: string, piece: any) {
     outfitStore.accessory = piece;
   }
 }
+
+
+
+
 </script>
 
 <style>
@@ -402,7 +451,6 @@ html {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
-  /* let ScrollSmoother handle scrolling; remove native overflow */
   flex: 1;
   align-content: flex-start;
   position: relative;

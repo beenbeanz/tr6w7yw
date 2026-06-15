@@ -1,3 +1,50 @@
+<template>
+  <div v-if="props.isOpen" class="modal-overlay" @click="closeModal">
+    <div class="modal-content" @click.stop>
+      <button class="close-btn" @click="closeModal">✕</button>
+
+      <h2>{{ isSigningUp ? 'Create Your Magical Account' : 'Welcome Back' }}</h2>
+
+      <form @submit.prevent="handleSubmit">
+        <input
+          v-if="isSigningUp"
+          v-model="username"
+          type="text"
+          placeholder="Choose a magical name"
+          required
+        />
+
+        <input
+          v-model="email"
+          type="email"
+          placeholder="Magic Mail"
+          required
+        />
+
+        <input
+          v-model="password"
+          type="password"
+          placeholder="Secret Password"
+          required
+        />
+
+        <p v-if="error" class="error">{{ error }}</p>
+
+        <button type="submit" :disabled="loading" class="submit-btn">
+          {{ loading ? 'Loading...' : (isSigningUp ? 'Sign Up' : 'Sign In') }}
+        </button>
+      </form>
+
+      <p class="switch-text">
+        {{ isSigningUp ? 'Already have an account?' : "Don't have an account?" }}
+        <button type="button" class="switch-btn" @click="toggleMode">
+          {{ isSigningUp ? 'Sign In' : 'Sign Up' }}
+        </button>
+      </p>
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
 import { ref } from 'vue'
 import { supabase } from '#imports'
@@ -84,53 +131,6 @@ const closeModal = () => {
   emit('close')
 }
 </script>
-
-<template>
-  <div v-if="props.isOpen" class="modal-overlay" @click="closeModal">
-    <div class="modal-content" @click.stop>
-      <button class="close-btn" @click="closeModal">✕</button>
-
-      <h2>{{ isSigningUp ? 'Create Your Magical Account' : 'Welcome Back' }}</h2>
-
-      <form @submit.prevent="handleSubmit">
-        <input
-          v-if="isSigningUp"
-          v-model="username"
-          type="text"
-          placeholder="Choose a magical name"
-          required
-        />
-
-        <input
-          v-model="email"
-          type="email"
-          placeholder="Magic Mail"
-          required
-        />
-
-        <input
-          v-model="password"
-          type="password"
-          placeholder="Secret Password"
-          required
-        />
-
-        <p v-if="error" class="error">{{ error }}</p>
-
-        <button type="submit" :disabled="loading" class="submit-btn">
-          {{ loading ? 'Loading...' : (isSigningUp ? 'Sign Up' : 'Sign In') }}
-        </button>
-      </form>
-
-      <p class="switch-text">
-        {{ isSigningUp ? 'Already have an account?' : "Don't have an account?" }}
-        <button type="button" class="switch-btn" @click="toggleMode">
-          {{ isSigningUp ? 'Sign In' : 'Sign Up' }}
-        </button>
-      </p>
-    </div>
-  </div>
-</template>
 
 <style scoped>
 .modal-overlay {
