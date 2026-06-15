@@ -65,4 +65,5 @@ function goToProfile() {
 
 .profile-btn:active {
   transform: scale(0.96);
+}
 </style>

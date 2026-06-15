@@ -124,7 +124,6 @@ interface Outfit {
 
 const authStore = useAuthStore()
 const { outfits, loading, deleteOutfit } = useUserOutfits()
-const router = useRouter();
 
 const selectedOutfit = ref<Outfit | null>(null)
 const showOutfitDetail = ref(false)
