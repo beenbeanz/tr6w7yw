@@ -86,6 +86,7 @@
 </template>
 
 <script setup lang="ts">
+import type { CSSProperties } from "vue"
 import { useOutfitStore } from "~/stores/outfit"
 import { useAuthStore } from "#imports"
 import { useOutfits } from "@/composables/useOutfits"
@@ -97,8 +98,6 @@ const authStore = useAuthStore()
 const { saveOutfit, loading: saving, error: saveError } = useOutfits()
 
 const capturing = ref(false)
-
-// Theme list
 const themes = Array.from({ length: 11 }, (_, i) => i)
 const selectedTheme = ref(0)
 const themeListRef = ref<HTMLElement | null>(null)
@@ -316,45 +315,68 @@ const performSaveOutfit = async () => {
   }
 }
 
-function getDressStyle() {
-  const pos = outfitStore.dressPosition;
+function getDressStyle(): CSSProperties {
+  const { 
+    width = 615, 
+    height = "auto", 
+    rotation = 0,
+    layer_order = 1,
+    translate_x = -30,
+    translate_y = -50
+  } = outfitStore.dress
+  
   return {
     position: "absolute",
     top: "70%",
     left: "70%",
-    transform: `translate(${pos.translateX}%, ${pos.translateY}%) rotate(${pos.rotation}deg)`,
-    width: `${pos.width}px`,
-    height: "auto",
-    zIndex: 2,
-  };
+    transform: `translate(${translate_x}%, ${translate_y}%) rotate(${rotation}deg)`,
+    width: `${width}px`,
+    height: height,
+    zIndex: layer_order as unknown as string,
+  } as CSSProperties;
 }
 
-function getShoeStyle() {
-  const pos = outfitStore.shoePosition;
+function getShoeStyle(): CSSProperties {
+  const { 
+    width = 677, 
+    height = "auto", 
+    rotation = 0,
+    layer_order = 1,
+    translate_x = -45,
+    translate_y = -7
+  } = outfitStore.shoe;
+  
   return {
     position: "absolute",
     top: "70%",
     left: "70%",
-    transform: `translate(${pos.translateX}%, ${pos.translateY}%) rotate(${pos.rotation}deg)`,
-    width: `${pos.width}px`,
-    height: "auto",
-    zIndex: 1,
-  };
+    transform: `translate(${translate_x}%, ${translate_y}%) rotate(${rotation}deg)`,
+    width: `${width}px`,
+    height: height,
+    zIndex: layer_order as unknown as string,
+  } as CSSProperties;
 }
 
-function getAccessoryStyle() {
-  const pos = outfitStore.accessoryPosition;
+function getAccessoryStyle(): CSSProperties {
+  const { 
+    width = 200, 
+    height = "auto", 
+    rotation = 0,
+    layer_order = 3,
+    translate_x = -120,
+    translate_y = -50
+  } = outfitStore.accessory;
+  
   return {
     position: "absolute",
     top: "30%",
     left: "70%",
-    transform: `translate(${pos.translateX}%, ${pos.translateY}%) rotate(${pos.rotation}deg)`,
-    width: `${pos.width}px`,
-    height: "auto",
-    zIndex: 3,
-  };
+    transform: `translate(${translate_x}%, ${translate_y}%) rotate(${rotation}deg)`,
+    width: `${width}px`,
+    height: height,
+    zIndex: layer_order as unknown as string,
+  } as CSSProperties;
 }
-
 </script>
 
 <style scoped>

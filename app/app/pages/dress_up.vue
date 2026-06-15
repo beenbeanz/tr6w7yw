@@ -95,12 +95,24 @@ async function handleNavigate() {
 }
 
 function restartOutfit() {
-  selectedDress.value = null;
-  selectedShoe.value = null;
-  selectedAccessories.value = null;
-  outfitStore.dress = null;
-  outfitStore.shoe = null;
-  outfitStore.accessory = null;
+  // Reset local refs
+  selectedDress.value = null
+  selectedShoe.value = null
+  selectedAccessories.value = null
+  
+  // Reset store - check if these are refs and need .value
+  if (outfitStore.dress) outfitStore.dress = null
+  if (outfitStore.shoe) outfitStore.shoe = null
+  if (outfitStore.accessory) outfitStore.accessory = null
+  
+  console.log('Outfit restarted:', {
+    selectedDress: selectedDress.value,
+    selectedShoe: selectedShoe.value,
+    selectedAccessories: selectedAccessories.value,
+    storeDress: outfitStore.dress,
+    storeShoe: outfitStore.shoe,
+    storeAccessory: outfitStore.accessory
+  })
 }
 
 const activeCategory = ref("dress");
@@ -332,6 +344,7 @@ function displayOnScreen(type: string, piece: any) {
 }
 
 .restart-btn {
+  z-index: 10;
   background: #6b3a75;
 }
 
@@ -504,5 +517,8 @@ body {
 .finishButton {
   width: 500px;
   height: 500px;
+}
+.mannequinContainer{
+  pointer-events: none;
 }
 </style>
