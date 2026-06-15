@@ -16,26 +16,26 @@
     </div>
 
     <div class="canvas">
-      <img src="/mannequin.png" class="mannequin" />
+    <img src="/mannequin.png" class="mannequin" />
 
-      <img
-        v-if="outfitStore.dress"
-        :src="outfitStore.dress.image_path"
-        class="dress"
-      />
+    <img
+      v-if="outfitStore.dress"
+      :src="outfitStore.dress.image_path"
+      :style="getDressStyle()"
+    />
 
-      <img
-        v-if="outfitStore.shoe"
-        :src="outfitStore.shoe.image_path"
-        class="shoe"
-      />
+    <img
+      v-if="outfitStore.shoe"
+      :src="outfitStore.shoe.image_path"
+      :style="getShoeStyle()"
+    />
 
-      <img
-        v-if="outfitStore.accessory"
-        :src="outfitStore.accessory.image_path"
-        class="accessory"
-      />
-    </div>
+    <img
+      v-if="outfitStore.accessory"
+      :src="outfitStore.accessory.image_path"
+      :style="getAccessoryStyle()"
+    />
+  </div>
 
     <div v-if="successMessage" class="message success-message">{{ successMessage }}</div>
     <div v-if="errorMessage" class="message error-message">{{ errorMessage }}</div>
@@ -315,6 +315,46 @@ const performSaveOutfit = async () => {
     errorMessage.value = err.message || 'Failed to save outfit'
   }
 }
+
+function getDressStyle() {
+  const pos = outfitStore.dressPosition;
+  return {
+    position: "absolute",
+    top: "70%",
+    left: "70%",
+    transform: `translate(${pos.translateX}%, ${pos.translateY}%) rotate(${pos.rotation}deg)`,
+    width: `${pos.width}px`,
+    height: "auto",
+    zIndex: 2,
+  };
+}
+
+function getShoeStyle() {
+  const pos = outfitStore.shoePosition;
+  return {
+    position: "absolute",
+    top: "70%",
+    left: "70%",
+    transform: `translate(${pos.translateX}%, ${pos.translateY}%) rotate(${pos.rotation}deg)`,
+    width: `${pos.width}px`,
+    height: "auto",
+    zIndex: 1,
+  };
+}
+
+function getAccessoryStyle() {
+  const pos = outfitStore.accessoryPosition;
+  return {
+    position: "absolute",
+    top: "30%",
+    left: "70%",
+    transform: `translate(${pos.translateX}%, ${pos.translateY}%) rotate(${pos.rotation}deg)`,
+    width: `${pos.width}px`,
+    height: "auto",
+    zIndex: 3,
+  };
+}
+
 </script>
 
 <style scoped>
@@ -333,33 +373,6 @@ const performSaveOutfit = async () => {
   width: 633px;
   height: auto;
   z-index: 1;
-}
-.dress {
-  position: absolute;
-  top: 70%;
-  left: 73.5%;
-  transform: translate(-60%, -80%);
-  width: 500px;
-  height: auto;
-  z-index: 2;
-}
-.shoe {
-  position: absolute;
-  top: 70%;
-  left: 70%;
-  transform: translate(-45%, -7%);
-  width: 677px;
-  height: auto;
-  z-index: 1;
-}
-.accessory {
-  position: absolute;
-  top: 30%;
-  left: 70%;
-  transform: translate(-120%, -50%);
-  width: 200px;
-  height: auto;
-  z-index: 3;
 }
 .controls {
   position: fixed;
@@ -607,5 +620,21 @@ body {
   opacity: 0.6;
   cursor: not-allowed;
   background: #ccc;
+}
+
+.canvas {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.mannequin {
+  position: absolute;
+  top: 62%;
+  left: 70%;
+  transform: translate(-50%, -50%);
+  width: 633px;
+  height: auto;
+  z-index: 1;
 }
 </style>
