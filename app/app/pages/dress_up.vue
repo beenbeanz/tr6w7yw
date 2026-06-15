@@ -66,9 +66,10 @@
       :style="getAccessoriesStyle()"
     />
   </div>
-  <div>
-      <a class="button" @click.prevent="handleNavigate">Finish & Share</a>
-    </div>
+  <div class="button-container">
+    <button class="button restart-btn" @click="restartOutfit">Restart</button>
+    <a class="button" @click.prevent="handleNavigate">Finish & Share</a>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -91,6 +92,15 @@ async function handleNavigate() {
   isLeaving.value = true;
   await new Promise((resolve) => setTimeout(resolve, 1200));
   router.push("/share");
+}
+
+function restartOutfit() {
+  selectedDress.value = null;
+  selectedShoe.value = null;
+  selectedAccessories.value = null;
+  outfitStore.dress = null;
+  outfitStore.shoe = null;
+  outfitStore.accessory = null;
 }
 
 const activeCategory = ref("dress");
@@ -294,14 +304,16 @@ function displayOnScreen(type: string, piece: any) {
   animation: fadeUp 0.8s ease 0.2s both;
 }
 
-
-.button {
-  animation: fadeUp 0.8s ease 0.6s both;
-}
-.button {
+.button-container {
   position: fixed;
   bottom: 40px;
   right: 40px;
+  display: flex;
+  gap: 12px;
+  animation: fadeUp 0.8s ease 0.6s both;
+}
+
+.button {
   background: #c8953a;
   color: white;
   padding: 16px 32px;
@@ -309,7 +321,24 @@ function displayOnScreen(type: string, piece: any) {
   cursor: pointer;
   z-index: 9999;
   display: inline-block;
+  border: none;
+  font-family: var(--sans);
+  font-size: 1rem;
+  transition: background 0.2s;
 }
+
+.button:hover {
+  background: #b8852a;
+}
+
+.restart-btn {
+  background: #6b3a75;
+}
+
+.restart-btn:hover {
+  background: #5a2d63;
+}
+
 .dress-overlay,
 .shoe-overlay,
 .accessories-overlay {
