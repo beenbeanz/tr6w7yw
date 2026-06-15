@@ -158,7 +158,7 @@ function getDressStyle(): CSSProperties {
     left: "70%",
     transform: `translate(${translate_x}%, ${translate_y}%) rotate(${rotation}deg)`,
     width: `${width}px`,
-    height: height === "auto" ? "auto" : `${height}px`,
+    height: height,
     zIndex: layer_order as unknown as string,
   } as CSSProperties;
 }
@@ -180,7 +180,7 @@ function getShoeStyle(): CSSProperties {
     left: "70%",
     transform: `translate(${translate_x}%, ${translate_y}%) rotate(${rotation}deg)`,
     width: `${width}px`,
-    height: height === "auto" ? "auto" : `${height}px`,
+    height: height,
     zIndex: layer_order as unknown as string,
   } as CSSProperties;
 }
@@ -202,12 +202,10 @@ function getAccessoriesStyle(): CSSProperties {
     left: "70%",
     transform: `translate(${translate_x}%, ${translate_y}%) rotate(${rotation}deg)`,
     width: `${width}px`,
-    height: height === "auto" ? "auto" : `${height}px`,
+    height: height,
     zIndex: layer_order as unknown as string,
   } as CSSProperties;
 }
-
-
 
 const scrollWrap = ref<HTMLElement | null>(null);
 let targetScroll = 0;
@@ -275,10 +273,6 @@ function displayOnScreen(type: string, piece: any) {
     outfitStore.accessory = piece;
   }
 }
-
-
-
-
 </script>
 
 <style>
