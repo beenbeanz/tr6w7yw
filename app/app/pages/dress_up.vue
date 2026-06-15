@@ -107,6 +107,9 @@ const outfitStore = useOutfitStore();
 const router = useRouter();
 const isLeaving = ref(false);
 
+let prevBodyBg = '';
+let prevBodyBgColor = '';
+
 async function handleNavigate() {
   isLeaving.value = true;
   await new Promise((resolve) => setTimeout(resolve, 1200));
@@ -188,6 +191,13 @@ function onWheel(e: WheelEvent) {
 }
 
 onMounted(() => {
+  const computedStyle = window.getComputedStyle(document.body);
+  prevBodyBg = computedStyle.backgroundImage || '';
+  prevBodyBgColor = computedStyle.backgroundColor || '';
+  
+  document.body.style.backgroundImage = 'url("/insideBg.png")';
+  document.body.style.backgroundColor = '';
+  
   const el = scrollWrap.value;
   if (!el) return;
   nextTick(() => updateMax());
@@ -196,6 +206,9 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+  document.body.style.backgroundImage = prevBodyBg;
+  document.body.style.backgroundColor = prevBodyBgColor;
+  
   const el = scrollWrap.value;
   if (el) el.removeEventListener("wheel", onWheel);
   window.removeEventListener("resize", updateMax);

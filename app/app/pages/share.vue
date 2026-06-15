@@ -306,7 +306,6 @@ const performSaveOutfit = async () => {
     successMessage.value = `"${outfitNameInput.value}" outfit saved successfully! View it in your profile.`
     closeSaveDialog()
 
-    // Clear messages after 3 seconds
     setTimeout(() => {
       successMessage.value = ''
     }, 3000)
@@ -343,27 +342,24 @@ const performSaveOutfit = async () => {
   width: 500px;
   height: auto;
   z-index: 2;
-  pointer-events: none;
 }
 .shoe {
   position: absolute;
   top: 70%;
   left: 70%;
-  transform: translate(-50%, -50%);
+  transform: translate(-45%, -7%);
   width: 677px;
   height: auto;
   z-index: 1;
-  pointer-events: none;
 }
 .accessory {
   position: absolute;
-  top: 70%;
+  top: 30%;
   left: 70%;
-  transform: translate(-50%, -50%);
-  width: 677px;
+  transform: translate(-120%, -50%);
+  width: 200px;
   height: auto;
   z-index: 3;
-  pointer-events: none;
 }
 .controls {
   position: fixed;
