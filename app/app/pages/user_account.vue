@@ -1,4 +1,5 @@
 <template>
+  <title>My Little Pony: Profile</title>
   <div class="profile-page">
     <div class="profile-shell">
     <div class="user-info">

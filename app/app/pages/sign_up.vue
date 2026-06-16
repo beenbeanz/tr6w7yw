@@ -1,4 +1,5 @@
 <template>
+  <title>My Little Pony: Sign Up</title>
 <div class="auth-page">
   <div class="auth-card">
     <img src="/logo.png" alt="logo" class="auth-logo" />

@@ -1,4 +1,5 @@
 <template>
+  <title>My Little Pony Dress Up Game</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" />
   <link

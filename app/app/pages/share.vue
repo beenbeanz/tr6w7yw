@@ -1,4 +1,5 @@
 <template>
+  <title>My Little Pony: Share</title>
   <div>
     <div class="theme-island" role="toolbar" aria-label="Select background theme">
       <div class="theme-list" ref="themeListRef">

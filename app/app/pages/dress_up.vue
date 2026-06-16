@@ -1,4 +1,5 @@
 <template>
+  <title>My Little Pony Dress Up</title>
   <div class="logo-container">
     <img src="/logo.png" alt="triple t logo" class="logo" />
   </div>
