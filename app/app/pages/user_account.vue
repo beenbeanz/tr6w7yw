@@ -85,7 +85,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted , onUnmounted} from 'vue'
 import { useAuthStore } from '#imports'
 import { useUserOutfits } from '@/composables/useUserOutfits'
 import { useRouter } from "vue-router";
@@ -94,7 +94,7 @@ const router = useRouter();
 
 async function handleLogout() {
   await authStore.logout();
-  router.push("/");
+  await router.push("/");
 }
 
 interface Outfit {
@@ -143,6 +143,7 @@ function goToDressUp(){
 onMounted(async () => {
   await authStore.fetchUser()
 })
+
 </script>
 
 <style>

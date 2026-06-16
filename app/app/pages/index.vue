@@ -78,7 +78,6 @@ function signUp() {
 .bg-overlay {
   position: fixed;
   inset: 0;
-  background-image: url("/insideBg.png");
   background-size: cover;
   background-position: center;
   opacity: 0;

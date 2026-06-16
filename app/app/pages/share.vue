@@ -102,14 +102,13 @@ const themes = Array.from({ length: 11 }, (_, i) => i)
 const selectedTheme = ref(0)
 const themeListRef = ref<HTMLElement | null>(null)
 const selectorStyle = ref<Record<string, string>>({ transform: 'translateX(0px)', width: '0px', height: '0px' })
-let prevBodyBg = ''
-let prevBodyBgColor = ''
 
 const showSaveDialog = ref(false)
 const outfitNameInput = ref('')
 const successMessage = ref('')
 const errorMessage = ref('')
 const showAuthModal = ref(false)
+const pendingOutfitName = ref('')
 
 function applyBodyBackground(index: number) {
   const png = `/bg${index}.png`
@@ -131,8 +130,6 @@ function selectTheme(i: number) {
 }
 
 onMounted(() => {
-  prevBodyBg = document.body.style.backgroundImage || ''
-  prevBodyBgColor = document.body.style.backgroundColor || ''
   applyBodyBackground(selectedTheme.value)
   updateSelector()
   window.addEventListener('resize', updateSelector)
@@ -143,8 +140,6 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  document.body.style.backgroundImage = prevBodyBg
-  document.body.style.backgroundColor = prevBodyBgColor
   window.removeEventListener('resize', updateSelector)
   const imgs = themeListRef.value?.querySelectorAll('img') ?? []
   imgs.forEach((img) => img.removeEventListener('load', updateSelector))
@@ -264,11 +259,11 @@ const closeSaveDialog = () => {
 
 const handleSaveOutfit = async () => {
   if (!authStore.isLoggedIn) {
+    pendingOutfitName.value = outfitNameInput.value
     closeSaveDialog()
     showAuthModal.value = true
     return
   }
-
   await performSaveOutfit()
 }
 
@@ -278,39 +273,33 @@ const handleAuthSuccess = async () => {
 }
 
 const performSaveOutfit = async () => {
-  console.log('performSaveOutfit called')
+  const nameToSave = outfitNameInput.value.trim() || pendingOutfitName.value.trim()
+  
+  if (!nameToSave) {
+    errorMessage.value = 'Outfit name is missing'
+    return
+  }
+
   errorMessage.value = ''
   successMessage.value = ''
 
   try {
     const pieces = []
-
-    if (outfitStore.dress) {
+    if (outfitStore.dress)
       pieces.push({ piece_type: 'dress' as const, piece_id: outfitStore.dress.id })
-    }
-
-    if (outfitStore.shoe) {
+    if (outfitStore.shoe)
       pieces.push({ piece_type: 'shoe' as const, piece_id: outfitStore.shoe.id })
-    }
-
-    if (outfitStore.accessory) {
+    if (outfitStore.accessory)
       pieces.push({ piece_type: 'accessory' as const, piece_id: outfitStore.accessory.id })
-    }
 
-    console.log('Pieces to save:', pieces)
-    console.log('Outfit name:', outfitNameInput.value)
-  
-    await saveOutfit(outfitNameInput.value, pieces)
+    await saveOutfit(nameToSave, pieces)
 
-    successMessage.value = `"${outfitNameInput.value}" outfit saved successfully! View it in your profile.`
+    successMessage.value = `"${nameToSave}" saved successfully! View it in your profile.`
+    pendingOutfitName.value = ''  // clear after success
     closeSaveDialog()
 
-    setTimeout(() => {
-      successMessage.value = ''
-    }, 3000)
-
+    setTimeout(() => { successMessage.value = '' }, 3000)
   } catch (err: any) {
-    console.error('Error saving outfit:', err)
     errorMessage.value = err.message || 'Failed to save outfit'
   }
 }

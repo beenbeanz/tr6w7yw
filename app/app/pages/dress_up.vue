@@ -85,8 +85,6 @@ const outfitStore = useOutfitStore();
 const router = useRouter();
 const isLeaving = ref(false);
 
-let prevBodyBg = '';
-let prevBodyBgColor = '';
 
 async function handleNavigate() {
   isLeaving.value = true;
@@ -95,24 +93,13 @@ async function handleNavigate() {
 }
 
 function restartOutfit() {
-  // Reset local refs
   selectedDress.value = null
   selectedShoe.value = null
   selectedAccessories.value = null
   
-  // Reset store - check if these are refs and need .value
   if (outfitStore.dress) outfitStore.dress = null
   if (outfitStore.shoe) outfitStore.shoe = null
   if (outfitStore.accessory) outfitStore.accessory = null
-  
-  console.log('Outfit restarted:', {
-    selectedDress: selectedDress.value,
-    selectedShoe: selectedShoe.value,
-    selectedAccessories: selectedAccessories.value,
-    storeDress: outfitStore.dress,
-    storeShoe: outfitStore.shoe,
-    storeAccessory: outfitStore.accessory
-  })
 }
 
 const activeCategory = ref("dress");
@@ -256,13 +243,6 @@ function onWheel(e: WheelEvent) {
 }
 
 onMounted(() => {
-  const computedStyle = window.getComputedStyle(document.body);
-  prevBodyBg = computedStyle.backgroundImage || '';
-  prevBodyBgColor = computedStyle.backgroundColor || '';
-  
-  document.body.style.backgroundImage = 'url("/insideBg.png")';
-  document.body.style.backgroundColor = '';
-  
   const el = scrollWrap.value;
   if (!el) return;
   nextTick(() => updateMax());
@@ -271,9 +251,6 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  document.body.style.backgroundImage = prevBodyBg;
-  document.body.style.backgroundColor = prevBodyBgColor;
-  
   const el = scrollWrap.value;
   if (el) el.removeEventListener("wheel", onWheel);
   window.removeEventListener("resize", updateMax);
