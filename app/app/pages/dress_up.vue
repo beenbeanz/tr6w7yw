@@ -1,4 +1,5 @@
 <template>
+  <title>My Little Pony Dress Up</title>
   <div class="logo-container">
     <img src="/logo.png" alt="triple t logo" class="logo" />
   </div>
@@ -49,54 +50,32 @@
       :src="selectedDress.image_path"
       :alt="selectedDress.display_name"
       class="dressOverlay"
-      style="
-        position: absolute;
-        top: 70%;
-        left: 73.5%;
-        transform: translate(-60%, -80%);
-        width: 500px;
-        height: auto;
-        z-index: 2;
-      "
+      :style="getDressStyle()"
     />
     <img
       v-if="selectedShoe"
       :src="selectedShoe.image_path"
       :alt="selectedShoe.display_name"
       class="shoeOverlay"
-      style="
-        position: absolute;
-        top: 70%;
-        left: 70%;
-        transform: translate(-45%, -7%);
-        width: 677px;
-        height: auto;
-        z-index: 1;
-      "
+      :style="getShoeStyle()"
     />
     <img
       v-if="selectedAccessories"
       :src="selectedAccessories.image_path"
       :alt="selectedAccessories.display_name"
       class="accessoriesOverlay"
-      style="
-        position: absolute;
-        top: 30%;
-        left: 70%;
-        transform: translate(-120%, -50%);
-        width: 200px;
-        height: auto;
-        z-index: 3;
-      "
+      :style="getAccessoriesStyle()"
     />
   </div>
-  <div>
-      <a class="button" @click.prevent="handleNavigate">Finish & Share</a>
-    </div>
+  <div class="button-container">
+    <button class="button restart-btn" @click="restartOutfit">Restart</button>
+    <a class="button" @click.prevent="handleNavigate">Finish & Share</a>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick } from "vue";
+import type { CSSProperties } from "vue";
 import gsap from "gsap";
 import { supabase } from "~/utils/supabase";
 import { useRouter } from "vue-router";
@@ -107,10 +86,21 @@ const outfitStore = useOutfitStore();
 const router = useRouter();
 const isLeaving = ref(false);
 
+
 async function handleNavigate() {
   isLeaving.value = true;
   await new Promise((resolve) => setTimeout(resolve, 1200));
   router.push("/share");
+}
+
+function restartOutfit() {
+  selectedDress.value = null
+  selectedShoe.value = null
+  selectedAccessories.value = null
+  
+  if (outfitStore.dress) outfitStore.dress = null
+  if (outfitStore.shoe) outfitStore.shoe = null
+  if (outfitStore.accessory) outfitStore.accessory = null
 }
 
 const activeCategory = ref("dress");
@@ -160,6 +150,72 @@ const activePieces = computed(() => {
   if (activeCategory.value === "accessories") return accessoriesPieces.value;
   return [];
 });
+
+function getDressStyle(): CSSProperties {
+  if (!selectedDress.value) return {};
+  const { 
+    width = 615, 
+    height = "auto", 
+    rotation = 0,
+    layer_order = 1,
+    translate_x = -30,
+    translate_y = -50
+  } = selectedDress.value;
+  
+  return {
+    position: "absolute",
+    top: "70%",
+    left: "70%",
+    transform: `translate(${translate_x}%, ${translate_y}%) rotate(${rotation}deg)`,
+    width: `${width}px`,
+    height: height,
+    zIndex: layer_order as unknown as string,
+  } as CSSProperties;
+}
+
+function getShoeStyle(): CSSProperties {
+  if (!selectedShoe.value) return {};
+  const { 
+    width = 677, 
+    height = "auto", 
+    rotation = 0,
+    layer_order = 1,
+    translate_x = -45,
+    translate_y = -7
+  } = selectedShoe.value;
+  
+  return {
+    position: "absolute",
+    top: "70%",
+    left: "70%",
+    transform: `translate(${translate_x}%, ${translate_y}%) rotate(${rotation}deg)`,
+    width: `${width}px`,
+    height: height,
+    zIndex: layer_order as unknown as string,
+  } as CSSProperties;
+}
+
+function getAccessoriesStyle(): CSSProperties {
+  if (!selectedAccessories.value) return {};
+  const { 
+    width = 200, 
+    height = "auto", 
+    rotation = 0,
+    layer_order = 3,
+    translate_x = -120,
+    translate_y = -50
+  } = selectedAccessories.value;
+  
+  return {
+    position: "absolute",
+    top: "30%",
+    left: "70%",
+    transform: `translate(${translate_x}%, ${translate_y}%) rotate(${rotation}deg)`,
+    width: `${width}px`,
+    height: height,
+    zIndex: layer_order as unknown as string,
+  } as CSSProperties;
+}
 
 const scrollWrap = ref<HTMLElement | null>(null);
 let targetScroll = 0;
@@ -238,14 +294,16 @@ function displayOnScreen(type: string, piece: any) {
   animation: fadeUp 0.8s ease 0.2s both;
 }
 
-
-.button {
-  animation: fadeUp 0.8s ease 0.6s both;
-}
-.button {
+.button-container {
   position: fixed;
   bottom: 40px;
   right: 40px;
+  display: flex;
+  gap: 12px;
+  animation: fadeUp 0.8s ease 0.6s both;
+}
+
+.button {
   background: #c8953a;
   color: white;
   padding: 16px 32px;
@@ -253,7 +311,25 @@ function displayOnScreen(type: string, piece: any) {
   cursor: pointer;
   z-index: 9999;
   display: inline-block;
+  border: none;
+  font-family: var(--sans);
+  font-size: 1rem;
+  transition: background 0.2s;
 }
+
+.button:hover {
+  background: #b8852a;
+}
+
+.restart-btn {
+  z-index: 10;
+  background: #6b3a75;
+}
+
+.restart-btn:hover {
+  background: #5a2d63;
+}
+
 .dress-overlay,
 .shoe-overlay,
 .accessories-overlay {
@@ -389,7 +465,6 @@ html {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
-  /* let ScrollSmoother handle scrolling; remove native overflow */
   flex: 1;
   align-content: flex-start;
   position: relative;
@@ -420,5 +495,8 @@ body {
 .finishButton {
   width: 500px;
   height: 500px;
+}
+.mannequinContainer{
+  pointer-events: none;
 }
 </style>

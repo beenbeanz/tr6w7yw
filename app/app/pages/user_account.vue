@@ -1,16 +1,17 @@
 <template>
+  <title>My Little Pony: Profile</title>
   <div class="profile-page">
     <div class="profile-shell">
     <div class="user-info">
       <h1>{{ authStore.user?.email ?? 'Guest' }}</h1>
       <button class="logout-btn" @click="handleLogout">
-  Logout
-</button>
+        Logout
+      </button>
     </div>
 
     <div class="outfits-section">
       <h2>My Outfits</h2>
-      <button @click="goToDressUp">+</button>
+      <button class="add-outfit-btn" @click="goToDressUp" title="Create new outfit">+</button>
 
       <p v-if="loading">Loading outfits...</p>
 
@@ -18,7 +19,6 @@
         No outfits yet. Create one!
       </p>
 
-   
       <div v-else class="outfits-grid">
         <div v-for="outfit in outfits" :key="outfit.id" class="outfit-card">
           <h3>{{ outfit.outfit_name }}</h3>
@@ -85,9 +85,8 @@
   </div>
 </template>
 
-
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted , onUnmounted} from 'vue'
 import { useAuthStore } from '#imports'
 import { useUserOutfits } from '@/composables/useUserOutfits'
 import { useRouter } from "vue-router";
@@ -96,7 +95,7 @@ const router = useRouter();
 
 async function handleLogout() {
   await authStore.logout();
-  router.push("/");
+  await router.push("/");
 }
 
 interface Outfit {
@@ -124,7 +123,6 @@ interface Outfit {
 
 const authStore = useAuthStore()
 const { outfits, loading, deleteOutfit } = useUserOutfits()
-const router = useRouter();
 
 const selectedOutfit = ref<Outfit | null>(null)
 const showOutfitDetail = ref(false)
@@ -146,36 +144,29 @@ function goToDressUp(){
 onMounted(async () => {
   await authStore.fetchUser()
 })
+
 </script>
 
 <style>
 .profile-page {
   min-height: 100vh;
-
   display: flex;
   justify-content: center;
   align-items: flex-start;
-
   padding: 3rem;
 }
 
 .profile-shell {
   position: relative;
   overflow: hidden;
-
   width: 100%;
   max-width: 1200px;
-
   background: rgba(255, 255, 255, 0.04);
-
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-
   border: 1px solid rgba(240, 201, 122, 0.15);
   border-radius: 32px;
-
   padding: 2rem;
-
   box-shadow:
     0 10px 30px rgba(0, 0, 0, 0.12),
     0 0 12px rgba(240, 201, 122, 0.08);
@@ -183,44 +174,32 @@ onMounted(async () => {
 
 .profile-shell::before {
   content: "";
-
   position: absolute;
   inset: 0;
-
   border-radius: inherit;
-
   background:
     linear-gradient(
       135deg,
       rgba(255,255,255,0.12),
       transparent 20%
     );
-
   pointer-events: none;
 }
-
-/* ---------- USER HEADER ---------- */
-
 .user-info {
   background: transparent;
   border: none;
   box-shadow: none;
-
   border-bottom: 1px solid rgba(240, 201, 122, 0.2);
   border-radius: 0;
 }
 
 .outfit-card {
   background: rgba(255, 255, 255, 0.03);
-
   backdrop-filter: blur(4px);
-
   border: 1px solid rgba(240, 201, 122, 0.12);
-
   box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.08);
-    padding: 2rem;
-
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -228,32 +207,23 @@ onMounted(async () => {
 
 .user-info h1 {
   margin: 0;
-
   font-family: var(--candy);
   font-size: clamp(2rem, 4vw, 3rem);
-
   color: var(--gold);
-
   text-shadow:
     0 2px 6px rgba(107, 30, 78, 0.6),
     0 0 15px rgba(200, 149, 58, 0.2);
 }
-
-/* ---------- BUTTONS ---------- */
 
 .logout-btn,
 .view-btn,
 .delete-btn {
   border: none;
   border-radius: 10px;
-
   padding: 0.8rem 1.4rem;
-
   cursor: pointer;
-
   font-family: var(--sans);
   font-weight: 600;
-
   transition: all 0.25s ease;
 }
 
@@ -261,7 +231,6 @@ onMounted(async () => {
 .view-btn {
   background: rgba(107, 30, 78, 0.75);
   color: var(--gold);
-
   border: 1px solid rgba(240, 201, 122, 0.25);
 }
 
@@ -269,9 +238,7 @@ onMounted(async () => {
 .view-btn:hover {
   background: var(--coral);
   color: var(--gold-light);
-
   transform: translateY(-2px) scale(1.03);
-
   box-shadow:
     0 4px 18px rgba(107, 30, 78, 0.35),
     0 0 12px rgba(200, 149, 58, 0.25);
@@ -284,23 +251,16 @@ onMounted(async () => {
 
 .delete-btn:hover {
   background: var(--red);
-
   transform: translateY(-2px);
-
   box-shadow:
     0 4px 18px rgba(192, 57, 43, 0.35);
 }
 
-/* ---------- SECTION ---------- */
-
 .outfits-section h2 {
   margin-bottom: 1.5rem;
-
   font-family: var(--candy);
   font-size: 2.25rem;
-
   color: var(--gold);
-
   text-shadow:
     0 2px 6px rgba(107, 30, 78, 0.5);
 }
@@ -310,8 +270,6 @@ onMounted(async () => {
   font-family: var(--sans);
 }
 
-/* ---------- GRID ---------- */
-
 .outfits-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -320,7 +278,6 @@ onMounted(async () => {
 
 .outfit-card:hover {
   transform: translateY(-6px);
-
   box-shadow:
     0 14px 36px rgba(107, 30, 78, 0.3),
     0 0 20px rgba(200, 149, 58, 0.12);
@@ -328,21 +285,15 @@ onMounted(async () => {
 
 .outfit-card h3 {
   margin-bottom: 1rem;
-
   font-family: var(--serif);
   font-size: 1.4rem;
-
   color: var(--gold-light);
 }
-
-/* ---------- PIECES ---------- */
 
 .piece {
   margin: 0.8rem 0;
   padding: 0.9rem;
-
   background: rgba(36, 54, 80, 0.2);
-
   border-left: 3px solid var(--gold);
   border-radius: 10px;
 }
@@ -350,7 +301,6 @@ onMounted(async () => {
 .piece strong {
   display: block;
   margin-bottom: 0.4rem;
-
   color: var(--gold-light);
 }
 
@@ -363,13 +313,10 @@ onMounted(async () => {
 
 .created-date {
   margin-top: 1rem;
-
   color: var(--cream2);
   opacity: 0.75;
   font-size: 0.85rem;
 }
-
-/* ---------- ACTIONS ---------- */
 
 .outfit-actions {
   display: flex;
@@ -382,53 +329,38 @@ onMounted(async () => {
   flex: 1;
 }
 
-/* ---------- MODAL ---------- */
-
 .detail-overlay {
   position: fixed;
   inset: 0;
-
   background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(10px);
-
   display: flex;
   justify-content: center;
   align-items: center;
-
   padding: 2rem;
   z-index: 999;
 }
 
 .detail-modal {
   position: relative;
-
   width: min(700px, 90vw);
   max-height: 90vh;
-
   overflow-y: auto;
-
   background: rgba(107, 30, 78, 0.2);
-
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-
   border: 1px solid rgba(240, 201, 122, 0.25);
   border-radius: 24px;
-
   padding: 2rem;
-
   box-shadow:
     0 15px 40px rgba(107, 30, 78, 0.35);
-
   color: var(--cream);
 }
 
 .detail-modal h2 {
   margin-bottom: 1.5rem;
-
   font-family: var(--candy);
   font-size: 2.2rem;
-
   color: var(--gold);
 }
 
@@ -439,9 +371,7 @@ onMounted(async () => {
 
 .detail-piece {
   padding: 1rem;
-
   background: rgba(36, 54, 80, 0.2);
-
   border: 1px solid rgba(240, 201, 122, 0.15);
   border-radius: 12px;
 }
@@ -449,7 +379,6 @@ onMounted(async () => {
 .detail-piece strong {
   display: block;
   margin-bottom: 0.75rem;
-
   color: var(--gold-light);
 }
 
@@ -459,54 +388,71 @@ onMounted(async () => {
 
 .detail-date {
   margin-top: 1rem;
-
   color: var(--cream2);
   opacity: 0.75;
 }
 
-/* ---------- IMAGES ---------- */
-
 .piece-image {
   width: 100%;
   max-height: 240px;
-
   object-fit: cover;
-
   margin-bottom: 0.75rem;
-
   border-radius: 12px;
-
   border: 1px solid rgba(240, 201, 122, 0.15);
-
   box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
-/* ---------- CLOSE BUTTON ---------- */
-
 .close-btn {
   position: absolute;
-
   top: 1rem;
   right: 1rem;
-
   width: 42px;
   height: 42px;
-
   border: none;
   border-radius: 50%;
-
   background: rgba(107, 30, 78, 0.7);
-
   color: var(--gold);
-
   cursor: pointer;
-
   transition: all 0.25s ease;
 }
 
 .close-btn:hover {
   background: var(--coral);
-
   transform: rotate(90deg) scale(1.05);
-}</style>
+}
+
+.add-outfit-btn {
+  margin-bottom: 1.5rem;
+  width: 60px;
+  height: 60px;
+  border: 2px solid rgba(240, 201, 122, 0.4);
+  border-radius: 50%;
+  background: rgba(107, 30, 78, 0.75);
+  backdrop-filter: blur(8px);
+  color: var(--gold);
+  font-size: 2rem;
+  font-weight: 300;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.2, 0.9, 0.2, 1);
+  box-shadow:
+    0 6px 20px rgba(107, 30, 78, 0.3),
+    0 0 15px rgba(200, 149, 58, 0.1);
+}
+
+.add-outfit-btn:hover {
+  width: 68px;
+  height: 68px;
+  background: var(--coral);
+  border-color: rgba(240, 201, 122, 0.6);
+  transform: scale(1.1);
+  box-shadow:
+    0 8px 28px rgba(107, 30, 78, 0.4),
+    0 0 20px rgba(200, 149, 58, 0.2);
+}
+
+.add-outfit-btn:active {
+  transform: scale(0.95);
+}
+</style>

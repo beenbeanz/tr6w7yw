@@ -17,5 +17,12 @@ export default defineNuxtConfig({
               url: "https://tyouqqjvgrzyszvyouhi.supabase.co"
             },
         }
+  },
+  app: {
+    head: {
+      link: [
+        {rel: 'icon', type: 'image/png', href: '/icon.jpg'},
+      ]
     }
+  }
 })

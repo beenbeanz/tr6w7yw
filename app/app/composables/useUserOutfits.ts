@@ -1,12 +1,6 @@
 import { ref, onMounted } from 'vue'
 import { supabase } from '#imports'
 
-interface PieceDetail {
-  id: number
-  display_name?: string
-  image_path: string
-}
-
 interface Outfit {
   id: string
   outfit_name: string
@@ -63,7 +57,6 @@ export const useUserOutfits = () => {
         (data ?? []).map(async (outfit) => {
           const pieces: any = {}
 
-          // Fetch dress details
           const dressOp = outfit.outfit_pieces.find(p => p.piece_type === 'dress')
           if (dressOp) {
             const { data: dressData } = await supabase
@@ -81,7 +74,6 @@ export const useUserOutfits = () => {
             }
           }
 
-          // Fetch shoe details
           const shoeOp = outfit.outfit_pieces.find(p => p.piece_type === 'shoe')
           if (shoeOp) {
             const { data: shoeData } = await supabase
@@ -99,7 +91,6 @@ export const useUserOutfits = () => {
             }
           }
 
-          // Fetch accessory details
           const accessoryOp = outfit.outfit_pieces.find(p => p.piece_type === 'accessory')
           if (accessoryOp) {
             const { data: accessoryData } = await supabase
@@ -135,14 +126,42 @@ export const useUserOutfits = () => {
     }
   }
 
-  const deleteOutfit = async (outfitId: string) => {
-    const { error: deleteError } = await supabase
-      .from('user_outfits')
-      .delete()
-      .eq('id', outfitId)
+  const getCurrentCostumeCount = async (userId: string): Promise<number> => {
+    const { data, error } = await supabase
+      .from('users')
+      .select('num_of_costumes')
+      .eq('id', userId)
+      .single()
 
-    if (!deleteError) {
+    if (error) throw error
+    return data?.num_of_costumes ?? 0
+  }
+
+  const deleteOutfit = async (outfitId: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
+      const { error: deleteError } = await supabase
+        .from('user_outfits')
+        .delete()
+        .eq('id', outfitId)
+
+      if (deleteError) throw deleteError
+
+      const currentCount = await getCurrentCostumeCount(user.id)
+      const newCount = Math.max(0, currentCount - 1) 
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ num_of_costumes: newCount })
+        .eq('id', user.id)
+
+      if (updateError) throw updateError
+
       outfits.value = outfits.value.filter(o => o.id !== outfitId)
+    } catch (err: any) {
+      error.value = err.message
+      throw err
     }
   }
 

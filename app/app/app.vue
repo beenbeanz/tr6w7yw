@@ -13,5 +13,13 @@ const authStore = useAuthStore()
 onMounted(() => {
   authStore.fetchUser()
 })
+
+onMounted(() => {
+  const audio = new Audio('/yourfile.mp3')
+  audio.loop = true
+  audio.volume = 0.5
+  audio.play()
+})
+
 </script>
 
